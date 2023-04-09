@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Receita",
+    "code": "1",
+    "description": "Receita",
+    "childrens": {
+      "create": [
+        {
+          "name": "Salário",
+          "code": "1",
+          "description": "Salário",
+          "childrens": {
+            "create": [
+              {
+                "name": "Salário Principal",
+                "description": "Salário Principal",
+                "code": "1"
+              },
+              {
+                "name": "Renda Extra",
+                "description": "Renda Extra",
+                "code": "2"
+              },
+              {
+                "name": "Outros",
+                "description": "Outros",
+                "code": "3"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Receita 2",
+          "code": "2"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Despesa",
+    "description": "Despesa",
+    "code": "2"
+  }
+]
