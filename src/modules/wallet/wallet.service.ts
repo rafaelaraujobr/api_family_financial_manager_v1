@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWalletDto } from './dto/create-wallet.dto';
+import { QueryWalletDto } from './dto/query-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
+import { WalletEntity } from './entities/wallet.entity';
+import { WalletPaginationEntity } from './entities/wallet.pagination.entity';
+import { WalletRepository } from './wallet.repository';
 
 @Injectable()
 export class WalletService {
-  create(createWalletDto: CreateWalletDto) {
-    return 'This action adds a new wallet';
+  constructor(private readonly walletRepository: WalletRepository) {}
+  async create(createWalletDto: CreateWalletDto): Promise<WalletEntity> {
+    return await this.walletRepository.create(createWalletDto);
   }
 
-  findAll() {
-    return `This action returns all wallet`;
+  async findAll(query: QueryWalletDto): Promise<WalletEntity[] | WalletPaginationEntity> {
+    if (query.paginator) return this.walletRepository.findAllPaginator(query);
+    else return this.walletRepository.findAll(query);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wallet`;
+  async findById(id: string): Promise<WalletEntity> {
+    return this.walletRepository.findById(id);
   }
 
-  update(id: number, updateWalletDto: UpdateWalletDto) {
-    return `This action updates a #${id} wallet`;
+  async update(id: string, updateWalletDto: UpdateWalletDto): Promise<WalletEntity | { message: string }> {
+    if (this.walletRepository.findById(id)) return this.walletRepository.update(id, updateWalletDto);
+    else return { message: 'Wallet not found' };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wallet`;
+  async remove(id: string): Promise<WalletEntity | { message: string }> {
+    if (this.walletRepository.findById(id)) return this.walletRepository.remove(id);
+    else return { message: 'Wallet not found' };
   }
 }

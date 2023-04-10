@@ -7,9 +7,10 @@ import { WalletModule } from './modules/wallet/wallet.module';
 import { CategoryModule } from './modules/category/category.module';
 import { TargetModule } from './modules/target/target.module';
 import { TransactionModule } from './modules/transaction/transaction.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
-  imports: [RealmModule, UserModule, WalletModule, CategoryModule, TargetModule, TransactionModule],
+  imports: [RealmModule, UserModule, WalletModule, CategoryModule, TargetModule, TransactionModule, NotificationModule],
   controllers: [AppController],
   providers: [AppService],
 })

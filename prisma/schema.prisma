@@ -52,7 +52,7 @@ model UserRealm {
   created_at DateTime @default(now())
 
   @@id([user_id, realm_id])
-  @@map("user_realms")
+  @@map("users_on_realms")
 }
 
 model Preference {
@@ -73,7 +73,6 @@ model Preference {
 model Category {
   id           String        @id @default(uuid())
   name         String
-  description  String?
   code         String?
   realm_id     String?
   realm        Realm?        @relation(fields: [realm_id], references: [id])
@@ -95,10 +94,10 @@ model Wallet {
   name         String
   description  String?
   type         TypeWallet    @default(OTHER)
-  realm_id     String
-  realm        Realm         @relation(fields: [realm_id], references: [id])
-  author_id    String
-  author       User          @relation(fields: [author_id], references: [id])
+  realm_id     String?
+  realm        Realm?        @relation(fields: [realm_id], references: [id])
+  author_id    String?
+  author       User?         @relation(fields: [author_id], references: [id])
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt
   deleted_at   DateTime?
@@ -115,10 +114,10 @@ model Target {
   amount      Float     @default(0)
   wallet_id   String
   wallet      Wallet    @relation(fields: [wallet_id], references: [id])
-  realm_id    String
-  realm       Realm     @relation(fields: [realm_id], references: [id])
-  author_id   String
-  author      User      @relation(fields: [author_id], references: [id])
+  realm_id    String?
+  realm       Realm?    @relation(fields: [realm_id], references: [id])
+  author_id   String?
+  author      User?     @relation(fields: [author_id], references: [id])
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at  DateTime?

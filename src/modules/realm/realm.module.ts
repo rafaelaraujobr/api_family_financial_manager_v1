@@ -4,6 +4,6 @@ import { RealmController } from './realm.controller';
 
 @Module({
   controllers: [RealmController],
-  providers: [RealmService]
+  providers: [RealmService],
 })
 export class RealmModule {}
