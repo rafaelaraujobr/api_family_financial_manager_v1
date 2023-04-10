@@ -11,31 +11,37 @@ datasource db {
 }
 
 model Realm {
-  id           String        @id @default(uuid())
-  name         String
-  created_at   DateTime      @default(now())
-  updated_at   DateTime      @updatedAt
-  categories   Category[]
-  wallets      Wallet[]
-  targets      Target[]
-  transactions Transaction[]
+  id            String         @id @default(uuid())
+  name          String
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  deleted_at    DateTime?
+  categories    Category[]
+  wallets       Wallet[]
+  targets       Target[]
+  transactions  Transaction[]
+  notifications Notification[]
+  preferences   Preference[]
 
   @@map("realms")
 }
 
 model User {
-  id           String        @id @default(uuid())
-  email        String        @unique
-  password     String
-  cell_phone   String
-  first_name   String
-  last_name    String
-  created_at   DateTime      @default(now())
-  updated_at   DateTime      @updatedAt
-  categories   Category[]
-  wallets      Wallet[]
-  target       Target[]
-  transactions Transaction[]
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  cell_phone    String?
+  first_name    String
+  last_name     String
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  deleted_at    DateTime?
+  categories    Category[]
+  wallets       Wallet[]
+  targets       Target[]
+  transactions  Transaction[]
+  notifications Notification[]
+  preference    Preference?
 
   @@map("users")
 }
@@ -49,6 +55,21 @@ model UserRealm {
   @@map("user_realms")
 }
 
+model Preference {
+  id         String              @id @default(uuid())
+  theme      ThemePreferences    @default(LIGHT)
+  language   LanguagePreferences @default(PT_BR)
+  currency   CurrencyPreferences @default(BRL)
+  user_id    String              @unique
+  user       User                @relation(fields: [user_id], references: [id])
+  realm_id   String
+  realm      Realm               @relation(fields: [realm_id], references: [id])
+  created_at DateTime            @default(now())
+  updated_at DateTime            @updatedAt
+
+  @@map("preferences")
+}
+
 model Category {
   id           String        @id @default(uuid())
   name         String
@@ -60,6 +81,7 @@ model Category {
   author       User?         @relation(fields: [author_id], references: [id])
   created_at   DateTime      @default(now())
   updated_at   DateTime?     @updatedAt
+  deleted_at   DateTime?
   parent_id    String?
   parent       Category?     @relation("CategoryToCategory", fields: [parent_id], references: [id])
   childrens    Category[]    @relation("CategoryToCategory")
@@ -71,12 +93,15 @@ model Category {
 model Wallet {
   id           String        @id @default(uuid())
   name         String
+  description  String?
+  type         TypeWallet    @default(OTHER)
   realm_id     String
   realm        Realm         @relation(fields: [realm_id], references: [id])
   author_id    String
   author       User          @relation(fields: [author_id], references: [id])
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt
+  deleted_at   DateTime?
   targets      Target[]
   transactions Transaction[]
 
@@ -84,18 +109,19 @@ model Wallet {
 }
 
 model Target {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   description String?
-  amount      Float
+  amount      Float     @default(0)
   wallet_id   String
-  wallet      Wallet   @relation(fields: [wallet_id], references: [id])
+  wallet      Wallet    @relation(fields: [wallet_id], references: [id])
   realm_id    String
-  realm       Realm    @relation(fields: [realm_id], references: [id])
+  realm       Realm     @relation(fields: [realm_id], references: [id])
   author_id   String
-  author      User     @relation(fields: [author_id], references: [id])
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  author      User      @relation(fields: [author_id], references: [id])
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
 
   @@map("targets")
 }
@@ -104,7 +130,7 @@ model Transaction {
   id          String            @id @default(uuid())
   name        String
   description String?
-  amount      Float
+  amount      Float             @default(0)
   date        DateTime
   status      StatusTransaction @default(PENDING)
   category_id String
@@ -117,8 +143,60 @@ model Transaction {
   realm       Realm             @relation(fields: [realm_id], references: [id])
   created_at  DateTime          @default(now())
   updated_at  DateTime          @updatedAt
+  deleted_at  DateTime?
+  obs         String?
 
   @@map("transactions")
+}
+
+model Notification {
+  id          String             @id @default(uuid())
+  type        TypeNotification   @default(TRANSACTION)
+  title       String
+  description String?
+  status      StatusNotification @default(PENDING)
+  user_id     String
+  user        User               @relation(fields: [user_id], references: [id])
+  realm_id    String
+  realm       Realm              @relation(fields: [realm_id], references: [id])
+  created_at  DateTime           @default(now())
+  updated_at  DateTime           @updatedAt
+  deleted_at  DateTime?
+
+  @@map("notifications")
+}
+
+enum ThemePreferences {
+  LIGHT
+  DARK
+}
+
+enum LanguagePreferences {
+  PT_BR
+  EN_US
+}
+
+enum CurrencyPreferences {
+  BRL
+  USD
+}
+
+enum TypeWallet {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  SAVINGS
+  OTHER
+}
+
+enum TypeNotification {
+  TRANSACTION
+  TARGET
+}
+
+enum StatusNotification {
+  PENDING
+  READ
 }
 
 enum StatusTransaction {

@@ -9,9 +9,8 @@ async function main() {
   await prisma.transaction.deleteMany();
   await prisma.target.deleteMany();
   for (const category of categories) {
-    console.log(category);
     await prisma.category.create({
-      data: category as any,
+      data: category,
     });
   }
 }
