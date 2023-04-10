@@ -15,7 +15,7 @@ export class WalletRepository {
     });
   }
 
-  async findAll(query: any): Promise<WalletEntity[]> {
+  async findAll(query: QueryWalletDto): Promise<WalletEntity[]> {
     const where: any = {
       deleted_at: query.deleted ? { not: null } : null,
       AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],

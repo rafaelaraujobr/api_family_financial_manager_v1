@@ -5,7 +5,9 @@ import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { QueryWalletDto } from './dto/query-wallet.dto';
 import { WalletEntity } from './entities/wallet.entity';
 import { WalletPaginationEntity } from './entities/wallet.pagination.entity';
+import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger/dist';
 
+@ApiTags('Wallets')
 @Controller('api/v1/wallets')
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
@@ -15,6 +17,8 @@ export class WalletController {
     return this.walletService.create(createWalletDto);
   }
 
+  @ApiQuery({ type: QueryWalletDto })
+  @ApiResponse({ status: 200, type: WalletPaginationEntity || WalletEntity, isArray: true })
   @Get()
   async findAll(@Query() query: QueryWalletDto): Promise<WalletEntity[] | WalletPaginationEntity> {
     return await this.walletService.findAll(query);

@@ -2,28 +2,23 @@
   {
     "name": "Receita",
     "code": "1",
-    "description": "Receita",
     "childrens": {
       "create": [
         {
           "name": "Salário",
           "code": "1",
-          "description": "Salário",
           "childrens": {
             "create": [
               {
                 "name": "Salário Principal",
-                "description": "Salário Principal",
                 "code": "1"
               },
               {
                 "name": "Renda Extra",
-                "description": "Renda Extra",
                 "code": "2"
               },
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "3"
               }
             ]
@@ -32,27 +27,22 @@
         {
           "name": "Outras receitas",
           "code": "2",
-          "description": "Outras receitas",
           "childrens": {
             "create": [
               {
                 "name": "Aluguel",
-                "description": "Aluguel",
                 "code": "1"
               },
               {
                 "name": "Venda de Bens",
-                "description": "Venda de Bens",
                 "code": "2"
               },
               {
                 "name": "Ganhos de jogos/loterias",
-                "description": "Ganhos de jogos/loterias",
                 "code": "3"
               },
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "4"
               }
             ]
@@ -63,34 +53,28 @@
   },
   {
     "name": "Despesa",
-    "description": "Despesa",
     "code": "2",
     "childrens": {
       "create": [
         {
           "name": "Moradia",
-          "description": "Espaço onde moramos",
           "code": "1",
           "childrens": {
             "create": [
               {
                 "name": "Aluguel",
-                "description": "Aluguel",
                 "code": "1"
               },
               {
                 "name": "Condomínio",
-                "description": "Condomínio",
                 "code": "2"
               },
               {
                 "name": "IPTU",
-                "description": "IPTU",
                 "code": "3"
               },
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "4"
               }
             ]
@@ -98,28 +82,23 @@
         },
         {
           "name": "Transporte",
-          "description": "Transporte",
           "code": "2",
           "childrens": {
             "create": [
               {
                 "name": "Combustível",
-                "description": "Combustível",
                 "code": "1"
               },
               {
                 "name": "Manutenção",
-                "description": "Manutenção",
                 "code": "2"
               },
               {
                 "name": "Pedágio",
-                "description": "Pedágio",
                 "code": "3"
               },
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "4"
               }
             ]
@@ -127,23 +106,19 @@
         },
         {
           "name": "Alimentação",
-          "description": "Alimentação",
           "code": "3",
           "childrens": {
             "create": [
               {
                 "name": "Supermercado",
-                "description": "Supermercado",
                 "code": "1"
               },
               {
                 "name": "Restaurantes",
-                "description": "Restaurantes",
                 "code": "2"
               },
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "3"
               }
             ]
@@ -151,23 +126,19 @@
         },
         {
           "name": "Saúde",
-          "description": "Saúde",
           "code": "4",
           "childrens": {
             "create": [
               {
                 "name": "Plano de Saudê",
-                "description": "Plano de Saúde",
                 "code": "1"
               },
               {
                 "name": "Medicamentos",
-                "description": "Medicamentos",
                 "code": "2"
               },
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "3"
               }
             ]
@@ -175,23 +146,19 @@
         },
         {
           "name": "Educação",
-          "description": "Educação",
           "code": "5",
           "childrens": {
             "create": [
               {
                 "name": "Material Escolar",
-                "description": "Material Escolar",
                 "code": "1"
               },
               {
                 "name": "Mensalidade",
-                "description": "Mensalidade",
                 "code": "2"
               },
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "3"
               }
             ]
@@ -199,23 +166,19 @@
         },
         {
           "name": "Lazer",
-          "description": "Lazer",
           "code": "6",
           "childrens": {
             "create": [
               {
                 "name": "Cinema",
-                "description": "Cinema",
                 "code": "1"
               },
               {
                 "name": "Parques",
-                "description": "Parques",
                 "code": "2"
               },
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "3"
               }
             ]
@@ -223,13 +186,11 @@
         },
         {
           "name": "Outros",
-          "description": "Outros",
           "code": "7",
           "childrens": {
             "create": [
               {
                 "name": "Outros",
-                "description": "Outros",
                 "code": "1"
               }
             ]
