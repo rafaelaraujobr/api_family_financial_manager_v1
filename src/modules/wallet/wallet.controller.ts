@@ -5,25 +5,29 @@ import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { QueryWalletDto } from './dto/query-wallet.dto';
 import { WalletEntity } from './entities/wallet.entity';
 import { WalletPaginationEntity } from './entities/wallet.pagination.entity';
-import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger/dist';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger/dist';
 
 @ApiTags('Wallets')
 @Controller('api/v1/wallets')
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
+  @ApiBody({
+    type: CreateWalletDto,
+    description: 'Create Wallet',
+  })
   @Post()
   async create(@Body() createWalletDto: CreateWalletDto): Promise<WalletEntity> {
     return this.walletService.create(createWalletDto);
   }
 
-  @ApiQuery({ type: QueryWalletDto })
-  @ApiResponse({ status: 200, type: WalletPaginationEntity || WalletEntity, isArray: true })
+  @ApiResponse({ status: 200, type: WalletPaginationEntity || WalletEntity, description: 'Success' })
   @Get()
   async findAll(@Query() query: QueryWalletDto): Promise<WalletEntity[] | WalletPaginationEntity> {
     return await this.walletService.findAll(query);
   }
 
+  @ApiResponse({ status: 200, type: WalletEntity, description: 'Success' })
   @Get(':id')
   async findById(@Param('id') id: string): Promise<WalletEntity | null> {
     return await this.walletService.findById(id);

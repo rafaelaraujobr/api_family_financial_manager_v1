@@ -1,57 +1,60 @@
-import { ApiProperty } from '@nestjs/swagger/dist/decorators';
+import { ApiPropertyOptional } from '@nestjs/swagger/dist/decorators';
 import { TypeWallet } from '@prisma/client';
 import { IsString, IsEnum, IsOptional } from 'class-validator';
-
+import { Transform } from 'class-transformer';
 export class QueryWalletDto {
-  @ApiProperty({ required: false, description: 'Nome da carteira', type: String })
+  @ApiPropertyOptional({ description: 'Nome', type: String })
   @IsString()
   @IsOptional()
-  name: string;
+  name?: string;
 
-  @ApiProperty({ required: false, description: 'Tipo da carteira', type: String })
+  @ApiPropertyOptional({ description: 'Tipo', enum: TypeWallet })
   @IsEnum(TypeWallet)
   @IsOptional()
-  type: TypeWallet;
+  type?: TypeWallet;
 
-  @ApiProperty({ required: false, description: 'Campo de busca', type: String })
+  @ApiPropertyOptional({ description: 'Campo de busca', type: String })
   @IsString()
   @IsOptional()
-  search: string;
+  search?: string;
 
-  @ApiProperty({ required: false, description: 'Itens apagados', type: String })
+  @ApiPropertyOptional({ description: 'Itens apagados', type: String })
   @IsString()
   @IsOptional()
-  deleted: string;
+  deleted?: string;
 
-  @ApiProperty({ required: false, description: 'Inicio data de criação', type: String })
+  @ApiPropertyOptional({ description: 'Inicio data de criação', type: String })
   @IsString()
   @IsOptional()
-  start_date: string;
+  start_date?: string;
 
-  @ApiProperty({ required: false, description: 'Final data de criação', type: String })
+  @ApiPropertyOptional({ description: 'Final data de criação', type: String })
   @IsString()
   @IsOptional()
-  end_date: string;
+  end_date?: string;
 
-  @ApiProperty({ required: false, example: 'true', description: 'Retorna registro paginado', type: String })
+  @ApiPropertyOptional({ description: 'Retorna registro paginado', type: String })
   @IsString()
   @IsOptional()
-  paginator: string;
+  paginator?: string;
 
-  @ApiProperty({ required: false, description: 'Pagina', type: String })
+  @ApiPropertyOptional({ description: 'Pagina', type: String })
   @IsString()
   @IsOptional()
-  page: string;
+  @Transform((value: any) => value && parseInt(value, 10))
+  page?: string;
 
-  @ApiProperty({ required: false, description: 'Limite de registros', type: String })
+  @ApiPropertyOptional({ description: 'Limite de registros', type: String })
   @IsString()
   @IsOptional()
-  limit: string;
+  limit?: string;
 
+  @ApiPropertyOptional({ description: 'asc | desc', type: String })
   @IsString()
   @IsOptional()
-  sort: string;
+  sort?: string;
 
+  @ApiPropertyOptional({ description: 'atributo', type: String })
   @IsString()
   @IsOptional()
   order: string;

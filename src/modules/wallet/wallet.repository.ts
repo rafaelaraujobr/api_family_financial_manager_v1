@@ -17,6 +17,8 @@ export class WalletRepository {
 
   async findAll(query: QueryWalletDto): Promise<WalletEntity[]> {
     const where: any = {
+      name: query.name || undefined,
+      type: query.type || undefined,
       deleted_at: query.deleted ? { not: null } : null,
       AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],
     };
