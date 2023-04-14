@@ -19,6 +19,7 @@ export class TransactionRepository {
       this.prisma.transaction.aggregate({
         where: {
           wallet_id,
+          status: 'CONCLUDED',
           type: 'INCOME',
         },
         _sum: {
@@ -28,6 +29,7 @@ export class TransactionRepository {
       this.prisma.transaction.aggregate({
         where: {
           wallet_id,
+          status: 'CONCLUDED',
           type: 'EXPENSE',
         },
         _sum: {
@@ -39,19 +41,122 @@ export class TransactionRepository {
     return { income: income['_sum'].amount, expense: expense['_sum'].amount };
   }
 
-  findAll() {
-    return this.prisma.transaction.findMany();
+  async findAll(query: any) {
+    const where: any = {
+      name: query.name || undefined,
+      type: query.type || undefined,
+      status: query.status || undefined,
+      created_at: query.start_date && query.end_date ? { gte: query.start_date, lte: query.end_date } : undefined,
+      AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],
+    };
+    return await this.prisma.transaction.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        status: true,
+        amount: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        wallet: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        created_at: true,
+        updated_at: true,
+      },
+    });
   }
 
-  findById(id: string) {
-    return `This action returns a #${id} transaction`;
+  async findAllPaginator(query: any) {
+    const page = +query.page || 1;
+    const take = +query.limit || 10;
+    const skip = (page - 1) * take;
+    const orderBy = { [query.order || 'updated_at']: query.sort || 'desc' };
+    const where: any = {
+      name: query.name || undefined,
+      type: query.type || undefined,
+      status: query.status || undefined,
+      created_at: query.start_date && query.end_date ? { gte: query.start_date, lte: query.end_date } : undefined,
+      AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],
+    };
+    const [records, total] = await this.prisma.$transaction([
+      this.prisma.transaction.findMany({
+        where,
+        skip,
+        take,
+        orderBy,
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          status: true,
+          amount: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          wallet: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          created_at: true,
+          updated_at: true,
+        },
+      }),
+      this.prisma.transaction.count({ where }),
+    ]);
+    return { records, total, pages: Math.ceil(total / take) };
   }
 
-  update(id: string, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction` + updateTransactionDto;
+  async findById(id: string) {
+    return await this.prisma.transaction.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        status: true,
+        amount: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        wallet: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+          },
+        },
+        created_at: true,
+        updated_at: true,
+      },
+    });
   }
-
-  remove(id: string) {
-    return `This action removes a #${id} transaction`;
+  async update(id: string, updateTransactionDto: UpdateTransactionDto) {
+    return await this.prisma.transaction.update({
+      where: { id },
+      data: { ...updateTransactionDto },
+    });
+  }
+  async remove(id: string) {
+    return await this.prisma.transaction.delete({
+      where: { id },
+    });
   }
 }

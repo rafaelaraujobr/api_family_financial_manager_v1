@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TypeTransaction } from '@prisma/client';
+import { StatusTransaction, TypeTransaction } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsString, IsNotEmpty, IsEnum, IsOptional, IsUUID, IsNumber, IsDate } from 'class-validator';
 
@@ -18,6 +18,11 @@ export class CreateTransactionDto {
   @IsEnum(TypeTransaction)
   @IsNotEmpty()
   type: TypeTransaction;
+
+  @ApiProperty({ description: 'Status', enum: StatusTransaction })
+  @IsEnum(StatusTransaction)
+  @IsOptional()
+  status: StatusTransaction;
 
   @ApiProperty({ description: 'Tipo', enum: Number })
   @IsNumber()

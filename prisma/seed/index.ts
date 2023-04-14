@@ -4,10 +4,10 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.realm.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.transaction.deleteMany();
   await prisma.category.deleteMany();
   await prisma.target.deleteMany();
   await prisma.wallet.deleteMany();
-  await prisma.transaction.deleteMany();
   for (const category of categories) {
     await prisma.category.create({
       data: category,
