@@ -10,6 +10,8 @@ export class WalletEntity {
   description?: string;
   @ApiPropertyOptional({ required: false, description: 'Tipo da carteira', enum: TypeWallet })
   type?: TypeWallet;
+  @ApiPropertyOptional({ required: false, description: 'Valor na carteira', type: Number })
+  amount?: number;
   @ApiPropertyOptional({ required: false, description: 'Data de criação', type: String })
   created_at?: Date;
   @ApiPropertyOptional({ required: false, description: 'Data de atualização', type: String })

@@ -1,0 +1,225 @@
+erDiagram
+
+        TypeTransaction {
+            INCOME INCOME
+EXPENSE EXPENSE
+TRANSFER TRANSFER
+        }
+    
+
+
+        ThemePreferences {
+            LIGHT LIGHT
+DARK DARK
+        }
+    
+
+
+        LanguagePreferences {
+            PT_BR PT_BR
+EN_US EN_US
+        }
+    
+
+
+        CurrencyPreferences {
+            BRL BRL
+USD USD
+        }
+    
+
+
+        TypeWallet {
+            CASH CASH
+CREDIT_CARD CREDIT_CARD
+DEBIT_CARD DEBIT_CARD
+SAVINGS SAVINGS
+TARGET TARGET
+OTHER OTHER
+        }
+    
+
+
+        TypeNotification {
+            TRANSACTION TRANSACTION
+TARGET TARGET
+        }
+    
+
+
+        StatusNotification {
+            PENDING PENDING
+READ READ
+        }
+    
+
+
+        StatusTransaction {
+            PENDING PENDING
+CONCLUDED CONCLUDED
+CANCELED CANCELED
+        }
+    
+  "realms" {
+    String id "🗝️"
+    String name 
+    DateTime created_at 
+    DateTime updated_at 
+    DateTime deleted_at "❓"
+    }
+  
+
+  "users" {
+    String id "🗝️"
+    String email 
+    String password 
+    String cell_phone "❓"
+    String first_name 
+    String last_name 
+    DateTime created_at 
+    DateTime updated_at 
+    DateTime deleted_at "❓"
+    }
+  
+
+  "users_on_realms" {
+    String user_id "🗝️"
+    String realm_id "🗝️"
+    DateTime created_at 
+    }
+  
+
+  "preferences" {
+    String id "🗝️"
+    ThemePreferences theme 
+    LanguagePreferences language 
+    CurrencyPreferences currency 
+    String user_id 
+    String realm_id 
+    DateTime created_at 
+    DateTime updated_at 
+    }
+  
+
+  "categories" {
+    String id "🗝️"
+    String name 
+    String code "❓"
+    String realm_id "❓"
+    String author_id "❓"
+    DateTime created_at 
+    DateTime updated_at "❓"
+    DateTime deleted_at "❓"
+    String parent_id "❓"
+    }
+  
+
+  "wallets" {
+    String id "🗝️"
+    String name 
+    String description "❓"
+    TypeWallet type 
+    String realm_id "❓"
+    String author_id "❓"
+    DateTime created_at 
+    DateTime updated_at 
+    DateTime deleted_at "❓"
+    }
+  
+
+  "targets" {
+    String id "🗝️"
+    String name 
+    String description "❓"
+    Float amount 
+    String wallet_id 
+    String realm_id "❓"
+    String author_id "❓"
+    DateTime created_at 
+    DateTime updated_at 
+    DateTime deleted_at "❓"
+    }
+  
+
+  "transactions" {
+    String id "🗝️"
+    String name 
+    String description "❓"
+    TypeTransaction type 
+    Float amount 
+    DateTime date 
+    StatusTransaction status 
+    String category_id 
+    String wallet_id 
+    String author_id 
+    String realm_id 
+    DateTime created_at 
+    DateTime updated_at 
+    DateTime deleted_at "❓"
+    String obs "❓"
+    }
+  
+
+  "transactions_on_wallets" {
+    String transaction_id "🗝️"
+    String wallet_id "🗝️"
+    DateTime created_at 
+    }
+  
+
+  "notifications" {
+    String id "🗝️"
+    TypeNotification type 
+    String title 
+    String description "❓"
+    StatusNotification status 
+    String user_id 
+    String realm_id 
+    DateTime created_at 
+    DateTime updated_at 
+    }
+  
+    "realms" o{--}o "categories" : "categories"
+    "realms" o{--}o "wallets" : "wallets"
+    "realms" o{--}o "targets" : "targets"
+    "realms" o{--}o "transactions" : "transactions"
+    "realms" o{--}o "notifications" : "notifications"
+    "realms" o{--}o "preferences" : "preferences"
+    "users" o{--}o "categories" : "categories"
+    "users" o{--}o "wallets" : "wallets"
+    "users" o{--}o "targets" : "targets"
+    "users" o{--}o "transactions" : "transactions"
+    "users" o{--}o "notifications" : "notifications"
+    "users" o{--}o "preferences" : "preference"
+    "preferences" o|--|| "ThemePreferences" : "enum:theme"
+    "preferences" o|--|| "LanguagePreferences" : "enum:language"
+    "preferences" o|--|| "CurrencyPreferences" : "enum:currency"
+    "preferences" o|--|| "users" : "user"
+    "preferences" o|--|| "realms" : "realm"
+    "categories" o|--|o "realms" : "realm"
+    "categories" o|--|o "users" : "author"
+    "categories" o|--|o "categories" : "parent"
+    "categories" o{--}o "categories" : "childrens"
+    "categories" o{--}o "transactions" : "transactions"
+    "wallets" o|--|| "TypeWallet" : "enum:type"
+    "wallets" o|--|o "realms" : "realm"
+    "wallets" o|--|o "users" : "author"
+    "wallets" o{--}o "targets" : "target"
+    "wallets" o{--}o "transactions" : "transactions"
+    "wallets" o{--}o "transactions_on_wallets" : "transaction_wallets"
+    "targets" o|--|| "wallets" : "wallet"
+    "targets" o|--|o "realms" : "realm"
+    "targets" o|--|o "users" : "author"
+    "transactions" o|--|| "TypeTransaction" : "enum:type"
+    "transactions" o|--|| "StatusTransaction" : "enum:status"
+    "transactions" o|--|| "categories" : "category"
+    "transactions" o|--|| "wallets" : "wallet"
+    "transactions" o|--|| "users" : "author"
+    "transactions" o|--|| "realms" : "realm"
+    "transactions" o{--}o "transactions_on_wallets" : "transaction_wallets"
+    "transactions_on_wallets" o|--|| "transactions" : "transaction"
+    "transactions_on_wallets" o|--|| "wallets" : "wallet"
+    "notifications" o|--|| "TypeNotification" : "enum:type"
+    "notifications" o|--|| "StatusNotification" : "enum:status"
+    "notifications" o|--|| "users" : "user"
+    "notifications" o|--|| "realms" : "realm"

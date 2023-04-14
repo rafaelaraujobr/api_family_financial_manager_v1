@@ -5,10 +5,11 @@ import { QueryWalletDto } from './dto/query-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
 import { WalletEntity } from './entities/wallet.entity';
 import { WalletPaginationEntity } from './entities/wallet.pagination.entity';
+import { TransactionRepository } from '../transaction/transaction.repository';
 
 @Injectable()
 export class WalletRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly transactionRepository: TransactionRepository) {}
   async create(createWalletDto: CreateWalletDto): Promise<any> {
     return await this.prisma.wallet.create({
       data: createWalletDto,
@@ -20,9 +21,12 @@ export class WalletRepository {
       name: query.name || undefined,
       type: query.type || undefined,
       deleted_at: query.deleted ? { not: null } : null,
+      created_at: query.start_date && query.end_date ? { gte: query.start_date, lte: query.end_date } : undefined,
       AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],
     };
+    const orderBy = { [query.order || 'updated_at']: query.sort || 'desc' };
     return await this.prisma.wallet.findMany({
+      orderBy,
       where,
       select: {
         id: true,
@@ -53,10 +57,14 @@ export class WalletRepository {
     return { records, total, pages: Math.ceil(total / take) };
   }
 
-  findById(id: string) {
-    return this.prisma.wallet.findFirst({
-      where: { id, deleted_at: null },
-    });
+  async findById(id: string): Promise<WalletEntity> {
+    const [wallet, balance] = await Promise.all([
+      this.prisma.wallet.findUnique({
+        where: { id },
+      }),
+      this.transactionRepository.findWalletBalanceById(id),
+    ]);
+    return { ...wallet, amount: balance.income - balance.expense };
   }
 
   async update(id: string, updateWalletDto: UpdateWalletDto) {

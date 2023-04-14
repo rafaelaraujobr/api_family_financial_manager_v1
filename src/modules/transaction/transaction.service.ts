@@ -1,26 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { TransactionRepository } from './transaction.repository';
 
 @Injectable()
 export class TransactionService {
-  create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+  constructor(private readonly transactionRepository: TransactionRepository) {}
+  async create(createTransactionDto: CreateTransactionDto) {
+    const { income, expense } = await this.transactionRepository.findWalletBalanceById(createTransactionDto.wallet_id);
+    if (createTransactionDto.type === 'EXPENSE' && expense + createTransactionDto.amount > income)
+      throw new HttpException('Insufficient funds', HttpStatus.BAD_REQUEST);
+    await this.transactionRepository.create(createTransactionDto);
+    return { message: 'Transaction created successfully' };
   }
 
   findAll() {
-    return `This action returns all transaction`;
+    return this.transactionRepository.findAll();
   }
 
-  findOne(id: number) {
+  findById(id: string) {
     return `This action returns a #${id} transaction`;
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
+  update(id: string, updateTransactionDto: UpdateTransactionDto) {
+    return `This action updates a #${id} transaction` + updateTransactionDto;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} transaction`;
   }
 }

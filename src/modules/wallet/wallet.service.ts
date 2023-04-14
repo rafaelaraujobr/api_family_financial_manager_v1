@@ -14,8 +14,8 @@ export class WalletService {
   }
 
   async findAll(query: QueryWalletDto): Promise<WalletEntity[] | WalletPaginationEntity> {
-    if (query.paginator) return this.walletRepository.findAllPaginator(query);
-    else return this.walletRepository.findAll(query);
+    if (query.not_paginated) return await this.walletRepository.findAll(query);
+    return await this.walletRepository.findAllPaginator(query);
   }
 
   async findById(id: string): Promise<WalletEntity> {

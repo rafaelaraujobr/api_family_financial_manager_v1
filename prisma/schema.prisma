@@ -5,6 +5,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider                  = "prisma-erd-generator"
+  output                    = "../docs/erd.svg"
+  theme                     = "dark"
+  includeRelationFromFields = true
+  // erdDebug                  = true
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -16,7 +24,6 @@ model Realm {
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
   deleted_at    DateTime?
-  categories    Category[]
   wallets       Wallet[]
   targets       Target[]
   transactions  Transaction[]
@@ -36,7 +43,6 @@ model User {
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
   deleted_at    DateTime?
-  categories    Category[]
   wallets       Wallet[]
   targets       Target[]
   transactions  Transaction[]
@@ -74,10 +80,6 @@ model Category {
   id           String        @id @default(uuid())
   name         String
   code         String?
-  realm_id     String?
-  realm        Realm?        @relation(fields: [realm_id], references: [id])
-  author_id    String?
-  author       User?         @relation(fields: [author_id], references: [id])
   created_at   DateTime      @default(now())
   updated_at   DateTime?     @updatedAt
   deleted_at   DateTime?
@@ -131,22 +133,22 @@ model Transaction {
   name                String
   description         String?
   type                TypeTransaction
-  amount              Float               @default(0)
+  amount              Float               @default(0.01)
   date                DateTime
   status              StatusTransaction   @default(PENDING)
   category_id         String
   category            Category            @relation(fields: [category_id], references: [id])
   wallet_id           String
   wallet              Wallet              @relation(fields: [wallet_id], references: [id])
-  author_id           String
-  author              User                @relation(fields: [author_id], references: [id])
-  realm_id            String
-  realm               Realm               @relation(fields: [realm_id], references: [id])
+  author_id           String?
+  author              User?               @relation(fields: [author_id], references: [id])
+  realm_id            String?
+  realm               Realm?              @relation(fields: [realm_id], references: [id])
   created_at          DateTime            @default(now())
   updated_at          DateTime            @updatedAt
   deleted_at          DateTime?
-  obs                 String?
   transaction_wallets TransactionWallet[]
+  obs                 String?
 
   @@map("transactions")
 }
@@ -221,5 +223,4 @@ enum StatusNotification {
 enum StatusTransaction {
   PENDING
   CONCLUDED
-  CANCELED
 }
