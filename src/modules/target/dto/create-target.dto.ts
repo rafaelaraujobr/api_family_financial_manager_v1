@@ -1,15 +1,19 @@
-import { IsString, IsNotEmpty, IsDecimal } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 
 export class CreateTargetDto {
+  @ApiProperty({ description: 'Nome', type: String })
   @IsString()
   @IsNotEmpty()
   name: string;
 
+  @ApiPropertyOptional({ description: 'Descriçao', type: String })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   description: string;
 
-  @IsDecimal()
+  @ApiPropertyOptional({ description: 'Valor', type: Number })
+  @IsNumber()
   @IsNotEmpty()
   amount: number;
 }

@@ -6,44 +6,44 @@
       "create": [
         {
           "name": "Salário",
-          "code": "1",
+          "code": "1.1",
           "childrens": {
             "create": [
               {
                 "name": "Salário Principal",
-                "code": "1"
+                "code": "1.1.1"
               },
               {
                 "name": "Renda Extra",
-                "code": "2"
+                "code": "1.1.2"
               },
               {
                 "name": "Outros",
-                "code": "3"
+                "code": "1.1.3"
               }
             ]
           }
         },
         {
           "name": "Outras receitas",
-          "code": "2",
+          "code": "1.2",
           "childrens": {
             "create": [
               {
                 "name": "Aluguel",
-                "code": "1"
+                "code": "1.2.1"
               },
               {
                 "name": "Venda de Bens",
-                "code": "2"
+                "code": "1.2.2"
               },
               {
                 "name": "Ganhos de jogos/loterias",
-                "code": "3"
+                "code": "1.2.3"
               },
               {
                 "name": "Outros",
-                "code": "4"
+                "code": "1.2.4"
               }
             ]
           }
@@ -58,140 +58,144 @@
       "create": [
         {
           "name": "Moradia",
-          "code": "1",
+          "code": "2.1",
           "childrens": {
             "create": [
               {
                 "name": "Aluguel",
-                "code": "1"
+                "code": "2.1.1"
               },
               {
                 "name": "Condomínio",
-                "code": "2"
+                "code": "2.1.2"
               },
               {
                 "name": "IPTU",
-                "code": "3"
+                "code": "2.1.3"
               },
               {
                 "name": "Outros",
-                "code": "4"
+                "code": "2.1.4"
               }
             ]
           }
         },
         {
           "name": "Transporte",
-          "code": "2",
+          "code": "2.2",
           "childrens": {
             "create": [
               {
                 "name": "Combustível",
-                "code": "1"
+                "code": "2.2.1"
               },
               {
                 "name": "Manutenção",
-                "code": "2"
+                "code": "2.2.2"
               },
               {
                 "name": "Pedágio",
-                "code": "3"
+                "code": "2.2.3"
               },
               {
                 "name": "Outros",
-                "code": "4"
+                "code": "2.2.4"
               }
             ]
           }
         },
         {
           "name": "Alimentação",
-          "code": "3",
+          "code": "2.3",
           "childrens": {
             "create": [
               {
                 "name": "Supermercado",
-                "code": "1"
+                "code": "2.3.1"
               },
               {
                 "name": "Restaurantes",
-                "code": "2"
+                "code": "2.3.2"
               },
               {
                 "name": "Outros",
-                "code": "3"
+                "code": "2.3.3"
               }
             ]
           }
         },
         {
           "name": "Saúde",
-          "code": "4",
+          "code": "2.4",
           "childrens": {
             "create": [
               {
                 "name": "Plano de Saudê",
-                "code": "1"
+                "code": "2.4.1"
               },
               {
                 "name": "Medicamentos",
-                "code": "2"
+                "code": "2.4.2"
               },
               {
                 "name": "Outros",
-                "code": "3"
+                "code": "2.4.3"
               }
             ]
           }
         },
         {
           "name": "Educação",
-          "code": "5",
+          "code": "2.5",
           "childrens": {
             "create": [
               {
                 "name": "Material Escolar",
-                "code": "1"
+                "code": "2.5.1"
               },
               {
                 "name": "Mensalidade",
-                "code": "2"
+                "code": "2.5.2"
               },
               {
                 "name": "Outros",
-                "code": "3"
+                "code": "2.5.3"
               }
             ]
           }
         },
         {
           "name": "Lazer",
-          "code": "6",
+          "code": "2.6",
           "childrens": {
             "create": [
               {
                 "name": "Cinema",
-                "code": "1"
+                "code": "2.6.1"
               },
               {
                 "name": "Parques",
-                "code": "2"
+                "code": "2.6.2"
+              },
+              {
+                "name": "Restaurantes",
+                "code": "2.6.3"
               },
               {
                 "name": "Outros",
-                "code": "3"
+                "code": "2.6.4"
               }
             ]
           }
         },
         {
           "name": "Outros",
-          "code": "7",
+          "code": "2.7",
           "childrens": {
             "create": [
               {
                 "name": "Outros",
-                "code": "1"
+                "code": "2.7.1"
               }
             ]
           }

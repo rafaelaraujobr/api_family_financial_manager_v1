@@ -10,7 +10,6 @@ async function bootstrap() {
     .setTitle('Api Fintrix V1')
     .setDescription('The Fintrix API description')
     .setVersion('1.0')
-    .addTag('Fintrix')
     .addServer('http://localhost:3000')
     .addServer('http://localhost:5000')
     .build();

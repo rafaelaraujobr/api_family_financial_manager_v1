@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { RealmService } from './realm.service';
 import { CreateRealmDto } from './dto/create-realm.dto';
 import { UpdateRealmDto } from './dto/update-realm.dto';
-
-@Controller('realm')
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('Realms')
+@Controller('api/v1/realms')
 export class RealmController {
   constructor(private readonly realmService: RealmService) {}
 

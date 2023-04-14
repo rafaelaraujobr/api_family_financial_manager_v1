@@ -27,6 +27,10 @@ export class WalletService {
     else return { message: 'Wallet not found' };
   }
 
+  async totalAmount(): Promise<any> {
+    return this.walletRepository.totalAmount();
+  }
+
   async remove(id: string): Promise<WalletEntity | { message: string }> {
     if (this.walletRepository.findById(id)) return this.walletRepository.remove(id);
     else return { message: 'Wallet not found' };

@@ -59,11 +59,15 @@ export class WalletRepository {
     });
   }
 
-  update(id: string, updateWalletDto: UpdateWalletDto) {
+  async update(id: string, updateWalletDto: UpdateWalletDto) {
     return this.prisma.wallet.update({
       where: { id },
       data: updateWalletDto,
     });
+  }
+
+  async totalAmount() {
+    return true;
   }
 
   remove(id: string) {

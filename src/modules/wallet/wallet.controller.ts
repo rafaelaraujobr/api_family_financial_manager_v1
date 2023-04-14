@@ -14,20 +14,20 @@ export class WalletController {
 
   @ApiBody({
     type: CreateWalletDto,
-    description: 'Create Wallet',
+    description: 'Criar carteira',
   })
   @Post()
   async create(@Body() createWalletDto: CreateWalletDto): Promise<WalletEntity> {
     return this.walletService.create(createWalletDto);
   }
 
-  @ApiResponse({ status: 200, type: WalletPaginationEntity || WalletEntity, description: 'Success' })
+  @ApiResponse({ status: 200, type: WalletPaginationEntity || WalletEntity, description: 'Sucesso' })
   @Get()
   async findAll(@Query() query: QueryWalletDto): Promise<WalletEntity[] | WalletPaginationEntity> {
     return await this.walletService.findAll(query);
   }
 
-  @ApiResponse({ status: 200, type: WalletEntity, description: 'Success' })
+  @ApiResponse({ status: 200, type: WalletEntity, description: 'Sucesso' })
   @Get(':id')
   async findById(@Param('id') id: string): Promise<WalletEntity | null> {
     return await this.walletService.findById(id);

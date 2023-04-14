@@ -90,19 +90,20 @@ model Category {
 }
 
 model Wallet {
-  id           String        @id @default(uuid())
-  name         String
-  description  String?
-  type         TypeWallet    @default(OTHER)
-  realm_id     String?
-  realm        Realm?        @relation(fields: [realm_id], references: [id])
-  author_id    String?
-  author       User?         @relation(fields: [author_id], references: [id])
-  created_at   DateTime      @default(now())
-  updated_at   DateTime      @updatedAt
-  deleted_at   DateTime?
-  targets      Target[]
-  transactions Transaction[]
+  id                  String              @id @default(uuid())
+  name                String
+  description         String?
+  type                TypeWallet          @default(OTHER)
+  realm_id            String?
+  realm               Realm?              @relation(fields: [realm_id], references: [id])
+  author_id           String?
+  author              User?               @relation(fields: [author_id], references: [id])
+  created_at          DateTime            @default(now())
+  updated_at          DateTime            @updatedAt
+  deleted_at          DateTime?
+  target              Target?
+  transactions        Transaction[]
+  transaction_wallets TransactionWallet[]
 
   @@map("wallets")
 }
@@ -112,8 +113,8 @@ model Target {
   name        String
   description String?
   amount      Float     @default(0)
-  wallet_id   String
-  wallet      Wallet    @relation(fields: [wallet_id], references: [id])
+  wallet_id   String    @unique
+  wallet      Wallet    @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
   realm_id    String?
   realm       Realm?    @relation(fields: [realm_id], references: [id])
   author_id   String?
@@ -126,26 +127,39 @@ model Target {
 }
 
 model Transaction {
-  id          String            @id @default(uuid())
-  name        String
-  description String?
-  amount      Float             @default(0)
-  date        DateTime
-  status      StatusTransaction @default(PENDING)
-  category_id String
-  category    Category          @relation(fields: [category_id], references: [id])
-  wallet_id   String
-  wallet      Wallet            @relation(fields: [wallet_id], references: [id])
-  author_id   String
-  author      User              @relation(fields: [author_id], references: [id])
-  realm_id    String
-  realm       Realm             @relation(fields: [realm_id], references: [id])
-  created_at  DateTime          @default(now())
-  updated_at  DateTime          @updatedAt
-  deleted_at  DateTime?
-  obs         String?
+  id                  String              @id @default(uuid())
+  name                String
+  description         String?
+  type                TypeTransaction
+  amount              Float               @default(0)
+  date                DateTime
+  status              StatusTransaction   @default(PENDING)
+  category_id         String
+  category            Category            @relation(fields: [category_id], references: [id])
+  wallet_id           String
+  wallet              Wallet              @relation(fields: [wallet_id], references: [id])
+  author_id           String
+  author              User                @relation(fields: [author_id], references: [id])
+  realm_id            String
+  realm               Realm               @relation(fields: [realm_id], references: [id])
+  created_at          DateTime            @default(now())
+  updated_at          DateTime            @updatedAt
+  deleted_at          DateTime?
+  obs                 String?
+  transaction_wallets TransactionWallet[]
 
   @@map("transactions")
+}
+
+model TransactionWallet {
+  transaction_id String
+  transaction    Transaction @relation(fields: [transaction_id], references: [id])
+  wallet_id      String
+  wallet         Wallet      @relation(fields: [wallet_id], references: [id])
+  created_at     DateTime    @default(now())
+
+  @@id([transaction_id, wallet_id])
+  @@map("transactions_on_wallets")
 }
 
 model Notification {
@@ -160,9 +174,14 @@ model Notification {
   realm       Realm              @relation(fields: [realm_id], references: [id])
   created_at  DateTime           @default(now())
   updated_at  DateTime           @updatedAt
-  deleted_at  DateTime?
 
   @@map("notifications")
+}
+
+enum TypeTransaction {
+  INCOME
+  EXPENSE
+  TRANSFER
 }
 
 enum ThemePreferences {
@@ -185,6 +204,7 @@ enum TypeWallet {
   CREDIT_CARD
   DEBIT_CARD
   SAVINGS
+  TARGET
   OTHER
 }
 
