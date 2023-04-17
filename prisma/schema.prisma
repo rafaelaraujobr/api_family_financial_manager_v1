@@ -29,6 +29,7 @@ model Realm {
   transactions  Transaction[]
   notifications Notification[]
   preferences   Preference[]
+  users         UserRealm[]
 
   @@map("realms")
 }
@@ -48,13 +49,16 @@ model User {
   transactions  Transaction[]
   notifications Notification[]
   preference    Preference?
+  realm         UserRealm?
 
   @@map("users")
 }
 
 model UserRealm {
-  user_id    String
+  user_id    String   @unique
+  user       User     @relation(fields: [user_id], references: [id])
   realm_id   String
+  realm      Realm    @relation(fields: [realm_id], references: [id])
   created_at DateTime @default(now())
 
   @@id([user_id, realm_id])
@@ -66,6 +70,8 @@ model Preference {
   theme      ThemePreferences    @default(LIGHT)
   language   LanguagePreferences @default(PT_BR)
   currency   CurrencyPreferences @default(BRL)
+  wallet_id  String?
+  wallet     Wallet?             @relation(fields: [wallet_id], references: [id])
   user_id    String              @unique
   user       User                @relation(fields: [user_id], references: [id])
   realm_id   String
@@ -106,6 +112,7 @@ model Wallet {
   target              Target?
   transactions        Transaction[]
   transaction_wallets TransactionWallet[]
+  preferences         Preference[]
 
   @@map("wallets")
 }

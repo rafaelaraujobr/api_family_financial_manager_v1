@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger/dist/decorators/api-property.decora
 import { WalletEntity } from './wallet.entity';
 
 export class WalletPaginationEntity {
-  @ApiProperty({ required: true, description: 'Lista de registros', type: [WalletEntity] })
+  @ApiProperty({ required: true, description: 'Lista de registros', isArray: true, type: WalletEntity })
   records: WalletEntity[];
   @ApiProperty({ required: true, description: 'Total de registros', type: Number })
   total: number;

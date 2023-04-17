@@ -18,6 +18,7 @@ export class WalletRepository {
 
   async findAll(query: QueryWalletDto): Promise<WalletEntity[]> {
     const where: any = {
+      realm_id: query.realm_id || undefined,
       name: query.name || undefined,
       type: query.type || undefined,
       deleted_at: query.deleted ? { not: null } : null,
@@ -41,6 +42,7 @@ export class WalletRepository {
     const skip = (page - 1) * take;
     const orderBy = { [query.order || 'updated_at']: query.sort || 'desc' };
     const where: any = {
+      realm_id: query.realm_id || undefined,
       deleted_at: query.deleted ? { not: null } : null,
       created_at: query.start_date && query.end_date ? { gte: query.start_date, lte: query.end_date } : undefined,
       AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],
@@ -57,18 +59,28 @@ export class WalletRepository {
     return { records, total, pages: Math.ceil(total / take) };
   }
 
-  async findById(id: string): Promise<WalletEntity> {
+  async findById(id: string, realm_id: string): Promise<WalletEntity> {
     const [wallet, balance] = await Promise.all([
-      this.prisma.wallet.findUnique({
-        where: { id },
+      this.prisma.wallet.findFirst({
+        where: { id, realm_id },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          author: { select: { id: true, first_name: true, last_name: true } },
+          created_at: true,
+          updated_at: true,
+        },
       }),
       this.transactionRepository.findWalletBalanceById(id),
     ]);
     return { ...wallet, amount: balance.income - balance.expense };
   }
 
-  async update(id: string, updateWalletDto: UpdateWalletDto) {
-    return this.prisma.wallet.update({
+  async update(id: string, realm_id: string, updateWalletDto: UpdateWalletDto) {
+    const wallet = await this.prisma.wallet.findFirst({ where: { id, realm_id } });
+    if (!wallet) return { message: 'Wallet not found' };
+    return await this.prisma.wallet.update({
       where: { id },
       data: updateWalletDto,
     });

@@ -57,6 +57,7 @@ export class TransactionRepository {
         type: true,
         status: true,
         amount: true,
+        date: true,
         category: {
           select: {
             id: true,
@@ -99,6 +100,7 @@ export class TransactionRepository {
           type: true,
           status: true,
           amount: true,
+          date: true,
           category: {
             select: {
               id: true,
@@ -143,6 +145,7 @@ export class TransactionRepository {
             type: true,
           },
         },
+        date: true,
         created_at: true,
         updated_at: true,
       },

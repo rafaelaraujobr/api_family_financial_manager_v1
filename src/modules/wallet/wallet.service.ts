@@ -18,12 +18,17 @@ export class WalletService {
     return await this.walletRepository.findAllPaginator(query);
   }
 
-  async findById(id: string): Promise<WalletEntity> {
-    return this.walletRepository.findById(id);
+  async findById(id: string, realm_id: string): Promise<WalletEntity> {
+    return this.walletRepository.findById(id, realm_id);
   }
 
-  async update(id: string, updateWalletDto: UpdateWalletDto): Promise<WalletEntity | { message: string }> {
-    if (this.walletRepository.findById(id)) return this.walletRepository.update(id, updateWalletDto);
+  async update(
+    id: string,
+    realm_id: string,
+    updateWalletDto: UpdateWalletDto,
+  ): Promise<WalletEntity | { message: string }> {
+    if (this.walletRepository.findById(id, realm_id))
+      return this.walletRepository.update(id, realm_id, updateWalletDto);
     else return { message: 'Wallet not found' };
   }
 
@@ -31,8 +36,8 @@ export class WalletService {
     return this.walletRepository.totalAmount();
   }
 
-  async remove(id: string): Promise<WalletEntity | { message: string }> {
-    if (this.walletRepository.findById(id)) return this.walletRepository.remove(id);
+  async remove(id: string, realm_id: string): Promise<WalletEntity | { message: string }> {
+    if (this.walletRepository.findById(id, realm_id)) return this.walletRepository.remove(id);
     else return { message: 'Wallet not found' };
   }
 }

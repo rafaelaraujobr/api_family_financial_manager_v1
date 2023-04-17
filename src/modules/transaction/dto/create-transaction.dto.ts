@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StatusTransaction, TypeTransaction } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsString, IsNotEmpty, IsEnum, IsOptional, IsUUID, IsNumber, IsDate } from 'class-validator';
@@ -9,7 +9,7 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ description: 'Descriçao', type: String })
+  @ApiPropertyOptional({ description: 'Descriçao', type: String })
   @IsString()
   @IsOptional()
   description: string;
@@ -19,27 +19,27 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   type: TypeTransaction;
 
-  @ApiProperty({ description: 'Status', enum: StatusTransaction })
+  @ApiPropertyOptional({ description: 'Status', enum: StatusTransaction, default: StatusTransaction.PENDING })
   @IsEnum(StatusTransaction)
   @IsOptional()
   status: StatusTransaction;
 
-  @ApiProperty({ description: 'Tipo', enum: Number })
+  @ApiProperty({ description: 'Valor', enum: Number })
   @IsNumber()
   @IsNotEmpty()
   amount: number;
 
-  @ApiProperty({ description: 'id da carteira', type: String })
+  @ApiProperty({ description: 'Id da carteira', type: String })
   @IsUUID()
   @IsNotEmpty()
   wallet_id: string;
 
-  @ApiProperty({ description: 'id da categoria', type: String })
+  @ApiProperty({ description: 'Id da categoria', type: String })
   @IsUUID()
   @IsNotEmpty()
   category_id: string;
 
-  @ApiProperty({ description: 'Inicio data de criação', type: Date })
+  @ApiProperty({ description: 'Data da transaçao', type: Date })
   @IsDate()
   @Transform(({ value }) => new Date(value))
   @IsNotEmpty()

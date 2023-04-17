@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import * as categories from './data/categories.json';
 const prisma = new PrismaClient();
 async function main() {
+  await prisma.userRealm.deleteMany();
+  await prisma.preference.deleteMany();
   await prisma.realm.deleteMany();
   await prisma.user.deleteMany();
   await prisma.transaction.deleteMany();

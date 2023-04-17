@@ -4,11 +4,11 @@ import { TypeWallet } from '@prisma/client';
 export class WalletEntity {
   @ApiProperty({ required: true, description: 'Id da carteira', type: String })
   id: string;
-  @ApiProperty({ required: true, description: 'Nome da carteira', type: String })
+  @ApiProperty({ required: true, description: 'Nome', type: String })
   name: string;
-  @ApiPropertyOptional({ required: false, description: 'Descrição da carteira', type: String })
+  @ApiPropertyOptional({ required: false, description: 'Descrição', type: String })
   description?: string;
-  @ApiPropertyOptional({ required: false, description: 'Tipo da carteira', enum: TypeWallet })
+  @ApiPropertyOptional({ required: false, description: 'Tipo', enum: TypeWallet })
   type?: TypeWallet;
   @ApiPropertyOptional({ required: false, description: 'Valor na carteira', type: Number })
   amount?: number;
