@@ -25,20 +25,20 @@ export class WalletController {
     return this.walletService.create(createWalletDto);
   }
 
-  @ApiResponse({ status: 200, type: WalletPaginationEntity || WalletEntity, description: 'Sucesso' })
-  @ApiBearerAuth('JWT')
-  @UseGuards(AuthGuard)
-  @Get()
-  async findAll(@Request() req, @Query() query: QueryWalletDto): Promise<WalletEntity[] | WalletPaginationEntity> {
-    return await this.walletService.findAll({ ...query, realm_id: req.user?.sub });
-  }
-
   @ApiResponse({ status: 200, type: WalletEntity, description: 'Sucesso' })
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard)
   @Get(':id')
   async findById(@Param('id') id: string, @Request() req): Promise<WalletEntity | null> {
     return await this.walletService.findById(id, req.user?.sub);
+  }
+
+  @ApiResponse({ status: 200, type: WalletPaginationEntity || WalletEntity, description: 'Sucesso' })
+  @ApiBearerAuth('JWT')
+  @UseGuards(AuthGuard)
+  @Get()
+  async findAll(@Request() req, @Query() query: QueryWalletDto): Promise<WalletEntity[] | WalletPaginationEntity> {
+    return await this.walletService.findAll({ ...query, realm_id: req.user?.sub });
   }
 
   @ApiResponse({ status: 200, type: WalletEntity, description: 'Atualizado com sucesso' })
