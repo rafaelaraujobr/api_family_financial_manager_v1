@@ -6,16 +6,16 @@ import { DocumentBuilder } from '@nestjs/swagger';
 import { SwaggerModule } from '@nestjs/swagger/dist';
 import { AppModule } from './app.module';
 import { LoggerInterceptor } from './interceptors/log.interceptor';
-// import * as basicAuth from 'express-basic-auth';
+import * as basicAuth from 'express-basic-auth';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setBaseViewsDir(resolve('./src/views'));
   app.setViewEngine('hbs');
-  // app.use(
-  //   ['/api/v1/doc', '/api/v1/doc/*'],
-  //   basicAuth({ challenge: true, users: { [process.env.SWAGGER_USERNAME]: process.env.SWAGGER_PASSWORD } }),
-  // );
+  app.use(
+    ['/api/v1/doc', '/api/v1/doc/*'],
+    basicAuth({ challenge: true, users: { [process.env.SWAGGER_USERNAME]: process.env.SWAGGER_PASSWORD } }),
+  );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -23,7 +23,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  //Swagger
+  //config swagger
   const config = new DocumentBuilder()
     .setTitle('Api Fintrix V1')
     .setDescription(
@@ -50,10 +50,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/doc', app, document);
   app.useGlobalInterceptors(new LoggerInterceptor());
+  //config cors
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
+    allowedHeaders: '*',
+    credentials: true,
   });
   await app.listen(process.env.PORT || 3000);
 }
