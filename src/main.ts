@@ -6,17 +6,16 @@ import { DocumentBuilder } from '@nestjs/swagger';
 import { SwaggerModule } from '@nestjs/swagger/dist';
 import { AppModule } from './app.module';
 import { LoggerInterceptor } from './interceptors/log.interceptor';
-import * as basicAuth from 'express-basic-auth';
+// import * as basicAuth from 'express-basic-auth';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useStaticAssets(resolve('./src/public'));
   app.setBaseViewsDir(resolve('./src/views'));
   app.setViewEngine('hbs');
-  app.use(
-    ['/api/v1/doc', '/api/v1/doc/*'],
-    basicAuth({ challenge: true, users: { [process.env.SWAGGER_USERNAME]: process.env.SWAGGER_PASSWORD } }),
-  );
+  // app.use(
+  //   ['/api/v1/doc', '/api/v1/doc/*'],
+  //   basicAuth({ challenge: true, users: { [process.env.SWAGGER_USERNAME]: process.env.SWAGGER_PASSWORD } }),
+  // );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
