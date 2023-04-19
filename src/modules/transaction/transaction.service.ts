@@ -21,9 +21,9 @@ export class TransactionService {
     return { message: 'Transaction created successfully' };
   }
 
-  findAll(query: any) {
-    if (query.not_paginated) return this.transactionRepository.findAll(query);
-    return this.transactionRepository.findAllPaginator(query);
+  async findAll(query: any) {
+    if (query.not_paginated) return await this.transactionRepository.findAll(query);
+    return await this.transactionRepository.findAllPaginator(query);
   }
 
   async findById(id: string) {
@@ -43,7 +43,7 @@ export class TransactionService {
     return await this.transactionRepository.update(id, updateTransactionDto);
   }
 
-  remove(id: string) {
-    return this.transactionRepository.remove(id);
+  async remove(id: string) {
+    return await this.transactionRepository.remove(id);
   }
 }
