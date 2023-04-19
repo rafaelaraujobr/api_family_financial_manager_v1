@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { QueryWalletDto } from './dto/query-wallet.dto';
@@ -11,9 +11,14 @@ import { TransactionRepository } from '../transaction/transaction.repository';
 export class WalletRepository {
   constructor(private readonly prisma: PrismaService, private readonly transactionRepository: TransactionRepository) {}
   async create(createWalletDto: CreateWalletDto): Promise<any> {
-    return await this.prisma.wallet.create({
-      data: createWalletDto,
-    });
+    try {
+      return await this.prisma.wallet.create({
+        data: createWalletDto,
+      });
+    } catch (error) {
+      if (error.code === 'P2002') throw new BadRequestException('Wallet already exists');
+      else throw new BadRequestException(error);
+    }
   }
 
   async findAll(query: QueryWalletDto): Promise<WalletEntity[]> {
@@ -26,14 +31,18 @@ export class WalletRepository {
       AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],
     };
     const orderBy = { [query.order || 'updated_at']: query.sort || 'desc' };
-    return await this.prisma.wallet.findMany({
-      orderBy,
-      where,
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+    try {
+      return await this.prisma.wallet.findMany({
+        orderBy,
+        where,
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   async findAllPaginator(query: QueryWalletDto): Promise<WalletPaginationEntity> {
@@ -53,6 +62,14 @@ export class WalletRepository {
         skip,
         take,
         orderBy,
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          author: { select: { id: true, first_name: true, last_name: true } },
+          created_at: true,
+          updated_at: true,
+        },
       }),
       this.prisma.wallet.count({ where }),
     ]);
@@ -84,10 +101,6 @@ export class WalletRepository {
       where: { id },
       data: updateWalletDto,
     });
-  }
-
-  async totalAmount() {
-    return true;
   }
 
   remove(id: string) {

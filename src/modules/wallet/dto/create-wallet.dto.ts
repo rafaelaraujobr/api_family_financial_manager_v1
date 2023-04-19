@@ -17,4 +17,14 @@ export class CreateWalletDto {
   @IsEnum(TypeWallet)
   @IsNotEmpty()
   type: TypeWallet;
+
+  @ApiPropertyOptional({ description: 'Id do author', type: String })
+  @IsString()
+  @IsOptional()
+  author_id: string;
+
+  @ApiPropertyOptional({ description: 'Id do realm', type: String })
+  @IsString()
+  @IsOptional()
+  realm_id: string;
 }

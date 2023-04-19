@@ -7,7 +7,7 @@ export class LoginAuthDto {
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ description: 'password', type: String, example: '123@Mudar' })
+  @ApiProperty({ description: 'password', type: String, example: 'Mudar@123' })
   @IsString({ message: 'password must be a string' })
   @IsNotEmpty()
   @MinLength(6)

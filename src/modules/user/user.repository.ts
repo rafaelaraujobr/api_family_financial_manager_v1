@@ -10,8 +10,29 @@ export class UserRepository {
     return 'This action adds a new user' + createUserDto;
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
+  async findAll() {
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        cell_phone: true,
+        first_name: true,
+        last_name: true,
+        created_at: true,
+        updated_at: true,
+        realm: {
+          select: {
+            realm: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return users.map((user) => ({ ...user, realm: user.realm?.realm }));
   }
 
   async findById(id: string) {

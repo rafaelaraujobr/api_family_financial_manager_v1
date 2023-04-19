@@ -21,8 +21,8 @@ export class WalletController {
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard)
   @Post()
-  async create(@Body() createWalletDto: CreateWalletDto): Promise<WalletEntity> {
-    return this.walletService.create(createWalletDto);
+  async create(@Body() createWalletDto: CreateWalletDto, @Request() req): Promise<WalletEntity> {
+    return this.walletService.create({ ...createWalletDto, realm_id: req.user?.sub, author_id: req.user?.user_id });
   }
 
   @ApiResponse({ status: 200, type: WalletEntity, description: 'Sucesso' })

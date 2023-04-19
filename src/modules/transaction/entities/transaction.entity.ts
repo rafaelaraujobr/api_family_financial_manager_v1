@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StatusTransaction, TypeTransaction } from '@prisma/client';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { WalletEntity } from 'src/modules/wallet/entities/wallet.entity';
 
 export class TransactionEntity {
@@ -8,6 +9,8 @@ export class TransactionEntity {
   id: string;
   @ApiProperty({ required: true, description: 'Nome', type: String })
   name: string;
+  @ApiPropertyOptional({ required: false, description: 'Tipo', type: UserEntity })
+  author?: UserEntity;
   @ApiPropertyOptional({ required: false, description: 'Tipo', enum: TypeTransaction })
   type?: TypeTransaction;
   @ApiPropertyOptional({ required: false, description: 'Descrição', type: String })

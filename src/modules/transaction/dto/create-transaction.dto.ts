@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StatusTransaction, TypeTransaction } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsString, IsNotEmpty, IsEnum, IsOptional, IsUUID, IsNumber, IsDate } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsOptional, IsUUID, IsNumber, IsDate, ValidateIf } from 'class-validator';
 
 export class CreateTransactionDto {
   @ApiProperty({ description: 'Nome', type: String })
@@ -13,6 +13,16 @@ export class CreateTransactionDto {
   @IsString()
   @IsOptional()
   description: string;
+
+  @ApiPropertyOptional({ description: 'Id do realm', type: String })
+  @IsUUID()
+  @IsOptional()
+  realm_id: string;
+
+  @ApiPropertyOptional({ description: 'Id do author', type: String })
+  @IsUUID()
+  @IsOptional()
+  author_id: string;
 
   @ApiProperty({ description: 'Tipo', enum: TypeTransaction })
   @IsEnum(TypeTransaction)
@@ -33,6 +43,11 @@ export class CreateTransactionDto {
   @IsUUID()
   @IsNotEmpty()
   wallet_id: string;
+
+  @ValidateIf((o) => o.type === TypeTransaction.TRANSFER)
+  @ApiProperty({ description: 'Id da carteira destino', type: String })
+  @IsUUID()
+  destination_wallet_id: string;
 
   @ApiProperty({ description: 'Id da categoria', type: String })
   @IsUUID()

@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TransactionEntity } from './entities/transaction.entity';
+import { TransactionPaginationEntity } from './entities/transaction.pagination.entity';
+import { QueryTransactionDto } from './dto/query-transaction.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @ApiTags('Transactions')
 @Controller('api/v1/transactions')
@@ -11,15 +14,23 @@ export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
   @ApiCreatedResponse({ description: 'Transaction created successfully' })
+  @ApiBearerAuth('JWT')
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionService.create(createTransactionDto);
+  create(@Request() req, @Body() createTransactionDto: CreateTransactionDto) {
+    return this.transactionService.create({
+      ...createTransactionDto,
+      realm_id: req.user?.sub,
+      author_id: req.user?.user_id,
+    });
   }
 
-  @ApiCreatedResponse({ description: 'Transaction found successfully' })
+  @ApiCreatedResponse({ description: 'Transaction found successfully', type: TransactionPaginationEntity })
   @Get()
-  findAll(@Query() query: any) {
-    return this.transactionService.findAll(query);
+  @ApiBearerAuth('JWT')
+  @UseGuards(AuthGuard)
+  findAll(@Query() query: QueryTransactionDto, @Request() req) {
+    return this.transactionService.findAll({ ...query, realm_id: req.user?.sub });
   }
 
   @ApiResponse({ status: 200, type: TransactionEntity, description: 'Sucesso' })

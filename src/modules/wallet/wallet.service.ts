@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { QueryWalletDto } from './dto/query-wallet.dto';
 import { UpdateWalletDto } from './dto/update-wallet.dto';
@@ -29,15 +29,11 @@ export class WalletService {
   ): Promise<WalletEntity | { message: string }> {
     if (this.walletRepository.findById(id, realm_id))
       return this.walletRepository.update(id, realm_id, updateWalletDto);
-    else return { message: 'Wallet not found' };
-  }
-
-  async totalAmount(): Promise<any> {
-    return this.walletRepository.totalAmount();
+    else throw new BadRequestException('Wallet not found');
   }
 
   async remove(id: string, realm_id: string): Promise<WalletEntity | { message: string }> {
     if (this.walletRepository.findById(id, realm_id)) return this.walletRepository.remove(id);
-    else return { message: 'Wallet not found' };
+    else throw new BadRequestException('Wallet not found');
   }
 }

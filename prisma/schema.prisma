@@ -41,6 +41,7 @@ model User {
   cell_phone    String?
   first_name    String
   last_name     String
+  url_image     String?
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
   deleted_at    DateTime?
@@ -111,9 +112,9 @@ model Wallet {
   deleted_at          DateTime?
   target              Target?
   transactions        Transaction[]
-  transaction_wallets TransactionWallet[]
   preferences         Preference[]
 
+  @@unique([name, realm_id])
   @@map("wallets")
 }
 
@@ -154,21 +155,9 @@ model Transaction {
   created_at          DateTime            @default(now())
   updated_at          DateTime            @updatedAt
   deleted_at          DateTime?
-  transaction_wallets TransactionWallet[]
   obs                 String?
 
   @@map("transactions")
-}
-
-model TransactionWallet {
-  transaction_id String
-  transaction    Transaction @relation(fields: [transaction_id], references: [id])
-  wallet_id      String
-  wallet         Wallet      @relation(fields: [wallet_id], references: [id])
-  created_at     DateTime    @default(now())
-
-  @@id([transaction_id, wallet_id])
-  @@map("transactions_on_wallets")
 }
 
 model Notification {
@@ -178,6 +167,7 @@ model Notification {
   description String?
   status      StatusNotification @default(PENDING)
   user_id     String
+  payload     String?
   user        User               @relation(fields: [user_id], references: [id])
   realm_id    String
   realm       Realm              @relation(fields: [realm_id], references: [id])

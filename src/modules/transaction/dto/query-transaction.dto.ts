@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger/dist/decorators';
-import { TypeWallet } from '@prisma/client';
+import { TypeTransaction } from '@prisma/client';
 import { IsString, IsEnum, IsOptional, IsBoolean, IsDateString } from 'class-validator';
 import { Transform } from 'class-transformer';
 enum Sort {
@@ -13,7 +13,8 @@ enum OrderItem {
   CREATED_AT = 'created_at',
   UPDATED_AT = 'updated_at',
 }
-export class QueryWalletDto {
+
+export class QueryTransactionDto {
   @ApiPropertyOptional({ description: 'Nome', type: String })
   @IsString()
   @IsOptional()
@@ -29,20 +30,15 @@ export class QueryWalletDto {
   @IsOptional()
   author_id?: string;
 
-  @ApiPropertyOptional({ description: 'Tipo', enum: TypeWallet })
-  @IsEnum(TypeWallet)
+  @ApiPropertyOptional({ description: 'Tipo', enum: TypeTransaction })
+  @IsEnum(TypeTransaction)
   @IsOptional()
-  type?: TypeWallet;
+  type?: TypeTransaction;
 
   @ApiPropertyOptional({ description: 'Campo de busca', type: String })
   @IsString()
   @IsOptional()
   search?: string;
-
-  @ApiPropertyOptional({ description: 'Itens apagados', type: String })
-  @IsString()
-  @IsOptional()
-  deleted?: string;
 
   @ApiPropertyOptional({ description: 'Inicio data de criação', type: String })
   @IsDateString()

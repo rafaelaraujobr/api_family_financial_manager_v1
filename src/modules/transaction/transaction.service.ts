@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionRepository } from './transaction.repository';
@@ -8,9 +8,14 @@ export class TransactionService {
   constructor(private readonly transactionRepository: TransactionRepository) {}
   async create(createTransactionDto: CreateTransactionDto) {
     const { type, status, wallet_id, amount } = createTransactionDto;
+    if (type === 'TRANSFER' && status === 'CONCLUDED') {
+      const { income, expense } = await this.transactionRepository.findWalletBalanceById(wallet_id);
+      if (expense + amount > income) throw new BadRequestException('Insufficient funds');
+      await this.transactionRepository.createTransfer(createTransactionDto);
+    }
     if (type === 'EXPENSE' && status === 'CONCLUDED') {
       const { income, expense } = await this.transactionRepository.findWalletBalanceById(wallet_id);
-      if (expense + amount > income) throw new HttpException('Insufficient funds', HttpStatus.BAD_REQUEST);
+      if (expense + amount > income) throw new BadRequestException('Insufficient funds');
     }
     await this.transactionRepository.create(createTransactionDto);
     return { message: 'Transaction created successfully' };
@@ -28,17 +33,17 @@ export class TransactionService {
   async update(id: string, updateTransactionDto: UpdateTransactionDto) {
     const { status } = updateTransactionDto;
     const transaction = await this.transactionRepository.findById(id);
-    if (!transaction) throw new HttpException('Transaction not found', HttpStatus.NOT_FOUND);
+    if (!transaction) throw new BadRequestException('Transaction not found');
     if (transaction.type === 'EXPENSE' && status === 'CONCLUDED') {
       const { income, expense } = await this.transactionRepository.findWalletBalanceById(transaction.wallet.id);
-      if (expense + transaction.amount > income) throw new HttpException('Insufficient funds', HttpStatus.BAD_REQUEST);
+      if (expense + transaction.amount > income) throw new BadRequestException('Insufficient funds');
     }
     if (transaction.status === 'CONCLUDED' && status === 'PENDING' && transaction.type === 'EXPENSE')
-      throw new HttpException('Transaction already concluded', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('Transaction already concluded');
     return await this.transactionRepository.update(id, updateTransactionDto);
   }
 
   remove(id: string) {
-    return `This action removes a #${id} transaction`;
+    return this.transactionRepository.remove(id);
   }
 }
