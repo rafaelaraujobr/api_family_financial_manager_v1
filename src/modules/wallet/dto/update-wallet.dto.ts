@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { TypeWallet } from '@prisma/client';
-import { IsString, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsEnum, IsOptional } from 'class-validator';
 
 export class UpdateWalletDto {
   @ApiPropertyOptional({ description: 'Nome', type: String })
@@ -15,6 +15,6 @@ export class UpdateWalletDto {
 
   @ApiPropertyOptional({ description: 'Tipo', enum: TypeWallet })
   @IsEnum(TypeWallet)
-  @IsNotEmpty()
+  @IsOptional()
   type: TypeWallet;
 }

@@ -65,6 +65,11 @@ export class QueryTransactionDto {
   @IsOptional()
   not_paginated?: boolean;
 
+  @ApiPropertyOptional({ description: 'Id da carteira', type: String })
+  @IsString()
+  @IsOptional()
+  wallet_id?: boolean;
+
   @ApiPropertyOptional({ description: 'Pagina', type: String })
   @IsString()
   @IsOptional()

@@ -99,20 +99,20 @@ model Category {
 }
 
 model Wallet {
-  id                  String              @id @default(uuid())
-  name                String
-  description         String?
-  type                TypeWallet          @default(OTHER)
-  realm_id            String?
-  realm               Realm?              @relation(fields: [realm_id], references: [id])
-  author_id           String?
-  author              User?               @relation(fields: [author_id], references: [id])
-  created_at          DateTime            @default(now())
-  updated_at          DateTime            @updatedAt
-  deleted_at          DateTime?
-  target              Target?
-  transactions        Transaction[]
-  preferences         Preference[]
+  id           String        @id @default(uuid())
+  name         String
+  description  String?
+  type         TypeWallet    @default(OTHER)
+  realm_id     String?
+  realm        Realm?        @relation(fields: [realm_id], references: [id])
+  author_id    String?
+  author       User?         @relation(fields: [author_id], references: [id])
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  deleted_at   DateTime?
+  target       Target?
+  transactions Transaction[]
+  preferences  Preference[]
 
   @@unique([name, realm_id])
   @@map("wallets")
@@ -137,27 +137,39 @@ model Target {
 }
 
 model Transaction {
-  id                  String              @id @default(uuid())
+  id                  String               @id @default(uuid())
   name                String
   description         String?
   type                TypeTransaction
-  amount              Float               @default(0.01)
+  amount              Float                @default(0.01)
   date                DateTime
-  status              StatusTransaction   @default(PENDING)
+  status              StatusTransaction    @default(PENDING)
   category_id         String
-  category            Category            @relation(fields: [category_id], references: [id])
+  category            Category             @relation(fields: [category_id], references: [id])
   wallet_id           String
-  wallet              Wallet              @relation(fields: [wallet_id], references: [id])
+  wallet              Wallet               @relation(fields: [wallet_id], references: [id])
   author_id           String?
-  author              User?               @relation(fields: [author_id], references: [id])
+  author              User?                @relation(fields: [author_id], references: [id])
   realm_id            String?
-  realm               Realm?              @relation(fields: [realm_id], references: [id])
-  created_at          DateTime            @default(now())
-  updated_at          DateTime            @updatedAt
+  realm               Realm?               @relation(fields: [realm_id], references: [id])
+  created_at          DateTime             @default(now())
+  updated_at          DateTime             @updatedAt
   deleted_at          DateTime?
+  transaction_expense TransferTransaction? @relation("transaction_expense")
+  transaction_income  TransferTransaction? @relation("transaction_income")
   obs                 String?
 
   @@map("transactions")
+}
+
+model TransferTransaction {
+  transaction_expense_id String      @unique
+  transaction_expense    Transaction @relation("transaction_expense", fields: [transaction_expense_id], references: [id], onDelete: Cascade)
+  transaction_income_id  String      @unique
+  transaction_income     Transaction @relation("transaction_income", fields: [transaction_income_id], references: [id], onDelete: Cascade)
+  created_at             DateTime    @default(now())
+
+  @@unique([transaction_expense_id, transaction_income_id])
 }
 
 model Notification {

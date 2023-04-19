@@ -76,10 +76,10 @@ export class WalletRepository {
     return { records, total, pages: Math.ceil(total / take) };
   }
 
-  async findById(id: string, realm_id: string): Promise<WalletEntity> {
+  async findById(id: string): Promise<WalletEntity> {
     const [wallet, balance] = await Promise.all([
-      this.prisma.wallet.findFirst({
-        where: { id, realm_id },
+      this.prisma.wallet.findUnique({
+        where: { id },
         select: {
           id: true,
           name: true,
@@ -94,8 +94,8 @@ export class WalletRepository {
     return { ...wallet, amount: balance.income - balance.expense };
   }
 
-  async update(id: string, realm_id: string, updateWalletDto: UpdateWalletDto) {
-    const wallet = await this.prisma.wallet.findFirst({ where: { id, realm_id } });
+  async update(id: string, updateWalletDto: UpdateWalletDto) {
+    const wallet = await this.prisma.wallet.findUnique({ where: { id } });
     if (!wallet) return { message: 'Wallet not found' };
     return await this.prisma.wallet.update({
       where: { id },

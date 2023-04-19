@@ -2,22 +2,32 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionRepository } from './transaction.repository';
+import { WalletRepository } from '../wallet/wallet.repository';
+import { TypeWallet } from '@prisma/client';
 
 @Injectable()
 export class TransactionService {
-  constructor(private readonly transactionRepository: TransactionRepository) {}
+  constructor(
+    private readonly transactionRepository: TransactionRepository,
+    private readonly walletRepository: WalletRepository,
+  ) {}
   async create(createTransactionDto: CreateTransactionDto) {
-    const { type, status, wallet_id, amount } = createTransactionDto;
+    const { type, status, wallet_id, amount, destination_wallet_id } = createTransactionDto;
     if (type === 'TRANSFER' && status === 'CONCLUDED') {
-      const { income, expense } = await this.transactionRepository.findWalletBalanceById(wallet_id);
+      const { income, expense, wallet } = await this.transactionRepository.findWalletBalanceById(wallet_id);
       if (expense + amount > income) throw new BadRequestException('Insufficient funds');
-      await this.transactionRepository.createTransfer(createTransactionDto);
+      if (wallet.type !== TypeWallet.DEBIT_CARD && wallet.type !== TypeWallet.CASH)
+        throw new BadRequestException('Wallet type must be debit');
+      const destination_wallet = await this.walletRepository.findById(destination_wallet_id);
+      if (destination_wallet.type !== TypeWallet.DEBIT_CARD && destination_wallet.type !== TypeWallet.CASH)
+        throw new BadRequestException('Wallet type must be debit');
     }
     if (type === 'EXPENSE' && status === 'CONCLUDED') {
       const { income, expense } = await this.transactionRepository.findWalletBalanceById(wallet_id);
       if (expense + amount > income) throw new BadRequestException('Insufficient funds');
     }
-    await this.transactionRepository.create(createTransactionDto);
+    if (type === 'TRANSFER') await this.transactionRepository.createTransfer(createTransactionDto);
+    else await this.transactionRepository.create(createTransactionDto);
     return { message: 'Transaction created successfully' };
   }
 

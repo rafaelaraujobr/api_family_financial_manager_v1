@@ -44,7 +44,7 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   wallet_id: string;
 
-  @ValidateIf((o) => o.type === TypeTransaction.TRANSFER)
+  @ValidateIf((origin: any) => origin.type === TypeTransaction.TRANSFER)
   @ApiProperty({ description: 'Id da carteira destino', type: String })
   @IsUUID()
   destination_wallet_id: string;

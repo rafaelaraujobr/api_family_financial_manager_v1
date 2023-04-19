@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from 'src/database/prisma.service';
@@ -16,22 +16,36 @@ export class TransactionRepository {
   createTransfer(createTransactionDto: CreateTransactionDto) {
     const { destination_wallet_id } = createTransactionDto;
     delete createTransactionDto.destination_wallet_id;
-    return this.prisma.transaction.createMany({
-      data: [
-        {
-          ...createTransactionDto,
-          type: 'INCOME',
-          wallet_id: destination_wallet_id,
-        },
-        {
-          ...createTransactionDto,
-          type: 'EXPENSE',
-        },
-      ],
-    });
+    try {
+      return this.prisma.$transaction(async (tx) => {
+        const transaction_expense = await tx.transaction.create({
+          data: {
+            ...createTransactionDto,
+            type: 'EXPENSE',
+          },
+        });
+        const transaction_income = await tx.transaction.create({
+          data: {
+            ...createTransactionDto,
+            type: 'INCOME',
+            wallet_id: destination_wallet_id,
+          },
+        });
+        await tx.transferTransaction.create({
+          data: {
+            transaction_expense_id: transaction_expense.id,
+            transaction_income_id: transaction_income.id,
+          },
+        });
+        return { message: 'Transferência realizada com sucesso' };
+      });
+    } catch (error) {
+      console.log(error);
+      throw new BadGatewayException(error);
+    }
   }
   async findWalletBalanceById(wallet_id: string) {
-    const [income, expense] = await this.prisma.$transaction([
+    const [income, expense, wallet] = await this.prisma.$transaction([
       this.prisma.transaction.aggregate({
         where: {
           wallet_id,
@@ -50,11 +64,16 @@ export class TransactionRepository {
         },
         _sum: {
           amount: true,
+        },
+      }),
+      this.prisma.wallet.findUnique({
+        where: {
+          id: wallet_id,
         },
       }),
     ]);
 
-    return { income: income['_sum'].amount, expense: expense['_sum'].amount };
+    return { income: income['_sum'].amount, expense: expense['_sum'].amount, wallet };
   }
   async findAll(query: any) {
     const where: any = {
@@ -98,13 +117,14 @@ export class TransactionRepository {
     const orderBy = { [query.order || 'updated_at']: query.sort || 'desc' };
     const where: any = {
       realm_id: query.realm_id,
+      wallet_id: query.wallet_id,
       name: query.name || undefined,
       type: query.type || undefined,
       status: query.status || undefined,
       created_at: query.start_date && query.end_date ? { gte: query.start_date, lte: query.end_date } : undefined,
       AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],
     };
-    const [records, total] = await this.prisma.$transaction([
+    const [transactions, total] = await this.prisma.$transaction([
       this.prisma.transaction.findMany({
         where,
         skip,
@@ -131,11 +151,20 @@ export class TransactionRepository {
           },
           created_at: true,
           updated_at: true,
+          transaction_expense: true,
+          transaction_income: true,
         },
       }),
       this.prisma.transaction.count({ where }),
     ]);
-    return { records, total, pages: Math.ceil(total / take) };
+    return {
+      records: transactions.map(({ transaction_expense, transaction_income, ...rest }) => ({
+        ...rest,
+        is_transf: transaction_expense || transaction_income ? true : false,
+      })),
+      total,
+      pages: Math.ceil(total / take),
+    };
   }
   async findById(id: string) {
     return await this.prisma.transaction.findUnique({
