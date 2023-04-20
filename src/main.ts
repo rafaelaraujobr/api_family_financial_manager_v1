@@ -1,7 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { resolve } from 'path';
+// import { NestExpressApplication } from '@nestjs/platform-express';
+// import { resolve } from 'path';
 import { DocumentBuilder } from '@nestjs/swagger';
 import { SwaggerModule } from '@nestjs/swagger/dist';
 import { AppModule } from './app.module';
@@ -9,9 +9,9 @@ import { LoggerInterceptor } from './interceptors/log.interceptor';
 // import * as basicAuth from 'express-basic-auth';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.setBaseViewsDir(resolve('./src/views'));
-  app.setViewEngine('hbs');
+  const app = await NestFactory.create(AppModule);
+  // app.setBaseViewsDir(resolve('./src/views'));
+  // app.setViewEngine('hbs');
   // app.use(
   //   ['/api/v1/doc', '/api/v1/doc/*'],
   //   basicAuth({ challenge: true, users: { [process.env.SWAGGER_USERNAME]: process.env.SWAGGER_PASSWORD } }),
@@ -51,9 +51,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/v1/doc', app, document);
   app.useGlobalInterceptors(new LoggerInterceptor());
   //config cors
-  app.enableCors({
-    origin: 'https://apifintrix.up.railway.app/',
-  });
+  app.enableCors();
   //   {
   //   origin: '*',
   //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
