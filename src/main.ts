@@ -50,7 +50,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/doc', app, document);
   app.useGlobalInterceptors(new LoggerInterceptor());
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders:
+      'Content-Type, Accept, Authorization, X-Requested-With, api_key, platform, Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With',
+  });
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
