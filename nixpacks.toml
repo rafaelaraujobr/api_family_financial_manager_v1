@@ -1,3 +1,2 @@
 [start]
-cmd = 'npm run build'
-cmd = 'npm run start:prod'
+cmd = 'npm run build && npm run start:prod'
