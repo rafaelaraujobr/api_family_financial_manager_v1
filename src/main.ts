@@ -51,10 +51,9 @@ async function bootstrap() {
   SwaggerModule.setup('api/v1/doc', app, document);
   app.useGlobalInterceptors(new LoggerInterceptor());
   app.enableCors({
-    origin: '*',
+    origin: 'https://apifintrix.up.railway.app/',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders:
-      'Content-Type, Accept, Authorization, X-Requested-With, api_key, platform, Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With',
+    credentials: true,
   });
   await app.listen(process.env.PORT || 3000);
 }
