@@ -51,15 +51,16 @@ async function bootstrap() {
   SwaggerModule.setup('api/v1/doc', app, document);
   app.useGlobalInterceptors(new LoggerInterceptor());
   //config cors
-  app
-    .enableCors
-    //   {
-    //   origin: '*',
-    //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    //   allowedHeaders: '*',
-    //   credentials: true,
-    // }
-    ();
+  app.enableCors({
+    origin: 'https://apifintrix.up.railway.app/',
+  });
+  //   {
+  //   origin: '*',
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  //   allowedHeaders: '*',
+  //   credentials: true,
+  // }
+  //();
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
