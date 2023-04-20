@@ -1,0 +1,29 @@
+env:
+  RAILWAY_APP_CORS: "https://apifintrix.up.railway.app" # substitua pela origem da sua aplicação cliente
+build:
+  commands:
+    - echo "RAILWAY_APP_CORS=${RAILWAY_APP_CORS}" >> .env
+routes:
+  # Configuração do middleware CORS globalmente:
+  - handle: "cors-pre-flight"
+    source: "(.*)\/(.*)"
+    method: OPTIONS
+    destination: "pass"
+    headers:
+      - key: "Access-Control-Allow-Origin"
+        value: "${RAILWAY_APP_CORS}"
+      - key: "Access-Control-Allow-Methods"
+        value: "GET,HEAD,PUT,PATCH,POST,DELETE"
+      - key: "Access-Control-Allow-Headers"
+        value: "Origin, X-Requested-With, Content-Type, Accept"
+  - handle: "app"
+    source: "/(.*)"
+    method: "*"
+    destination: "railwayapp:DIST_PORT"
+    headers:
+      - key: "Access-Control-Allow-Origin"
+        value: "${RAILWAY_APP_CORS}"
+      - key: "Access-Control-Allow-Methods"
+        value: "GET,HEAD,PUT,PATCH,POST,DELETE"
+      - key: "Access-Control-Allow-Headers"
+        value: "Origin, X-Requested-With, Content-Type, Accept"
