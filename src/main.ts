@@ -32,8 +32,8 @@ async function bootstrap() {
     .setVersion('1.0')
     .setTermsOfService('https://fintrix.com.br')
     .setContact('Rafael Araujo', 'https://fintrix.com.br', 'rflaraujodev@gmail.com')
-    .addServer('https://apifintrixv1.up.railway.app', 'railway')
-    .addServer('http://localhost:3000', 'local')
+    // .addServer('https://apifintrixv1.up.railway.app', 'railway')
+    // .addServer('http://localhost:3000', 'local')
     .addBearerAuth(
       {
         type: 'http',
