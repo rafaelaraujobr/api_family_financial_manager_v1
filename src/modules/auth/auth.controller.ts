@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokenEntity } from './entities/token.entity';
@@ -9,19 +9,15 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiResponse({ status: 200, description: 'The access token', type: TokenEntity })
+  @ApiResponse({ status: 200, description: 'Access Token', type: TokenEntity })
   @Post('login')
   signIn(@Body() loginAuthDto: LoginAuthDto) {
     return this.authService.signIn(loginAuthDto.email, loginAuthDto.password);
   }
 
-  // @ApiResponse({ status: 200, description: 'Update access token', type: TokenEntity })
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-  //   return this.authService.update(+id, updateAuthDto);
-  // }
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.authService.remove(+id);
-  // }
+  @ApiResponse({ status: 200, description: 'Refresh Token', type: TokenEntity })
+  @Patch('refresh-token')
+  async refreshToken(@Headers('x-refresh-token') refreshToken: string): Promise<TokenEntity> {
+    return await this.authService.refreshToken(refreshToken);
+  }
 }

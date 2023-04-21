@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/database/prisma.service';
@@ -32,7 +32,7 @@ export class UserRepository {
         },
       },
     });
-    return users.map((user) => ({ ...user, realm: user.realm?.realm }));
+    return users.length ? users.map((user) => ({ ...user, realm: user.realm?.realm })) : [];
   }
 
   async findById(id: string) {
@@ -66,32 +66,36 @@ export class UserRepository {
         },
       },
     });
-    return { ...user, realm: user.realm?.realm };
+    return user ? { ...user, realm: user.realm?.realm } : null;
   }
 
   async findByEmail(email: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        cell_phone: true,
-        first_name: true,
-        last_name: true,
-        password: true,
-        realm: {
-          select: {
-            realm: {
-              select: {
-                id: true,
-                name: true,
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: { email },
+        select: {
+          id: true,
+          email: true,
+          cell_phone: true,
+          first_name: true,
+          last_name: true,
+          password: true,
+          realm: {
+            select: {
+              realm: {
+                select: {
+                  id: true,
+                  name: true,
+                },
               },
             },
           },
         },
-      },
-    });
-    return { ...user, realm: user.realm?.realm };
+      });
+      return user ? { ...user, realm: user?.realm?.realm } : null;
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {

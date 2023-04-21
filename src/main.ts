@@ -32,8 +32,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .setTermsOfService('https://fintrix.com.br')
     .setContact('Rafael Araujo', 'https://fintrix.com.br', 'rflaraujodev@gmail.com')
-    // .addServer('https://apifintrixv1.up.railway.app', 'railway')
-    // .addServer('http://localhost:3000', 'local')
+    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
     .addBearerAuth(
       {
         type: 'http',
@@ -54,6 +53,7 @@ async function bootstrap() {
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With, X-Refresh-Token',
   });
   await app.listen(process.env.PORT || 3000);
 }
