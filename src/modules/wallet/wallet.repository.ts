@@ -69,11 +69,29 @@ export class WalletRepository {
           author: { select: { id: true, first_name: true, last_name: true } },
           created_at: true,
           updated_at: true,
+          transactions: {
+            select: {
+              amount: true,
+              type: true,
+            },
+          },
         },
       }),
       this.prisma.wallet.count({ where }),
     ]);
-    return { records, total, pages: Math.ceil(total / take) };
+    return {
+      records: records.map((item) => {
+        return {
+          ...item,
+          amount: item.transactions.reduce((acc, cur) => {
+            if (cur.type === 'INCOME') return acc + cur.amount;
+            else return acc - cur.amount;
+          }, 0),
+        };
+      }),
+      total,
+      pages: Math.ceil(total / take),
+    };
   }
 
   async findById(id: string): Promise<WalletEntity> {
