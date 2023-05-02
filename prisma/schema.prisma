@@ -106,6 +106,7 @@ model Wallet {
   realm_id     String?
   realm        Realm?        @relation(fields: [realm_id], references: [id])
   author_id    String?
+  is_notified  Boolean       @default(false)
   author       User?         @relation(fields: [author_id], references: [id])
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt

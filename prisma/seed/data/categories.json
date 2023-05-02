@@ -18,8 +18,12 @@
                 "code": "1.1.2"
               },
               {
-                "name": "Outros",
+                "name": "Valor inicial na carteira",
                 "code": "1.1.3"
+              },
+              {
+                "name": "Outros",
+                "code": "1.1.4"
               }
             ]
           }

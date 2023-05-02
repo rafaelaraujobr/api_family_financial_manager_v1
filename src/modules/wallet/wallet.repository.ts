@@ -12,8 +12,28 @@ export class WalletRepository {
   constructor(private readonly prisma: PrismaService, private readonly transactionRepository: TransactionRepository) {}
   async create(createWalletDto: CreateWalletDto): Promise<any> {
     try {
-      return await this.prisma.wallet.create({
-        data: createWalletDto,
+      return await this.prisma.$transaction(async (tx) => {
+        const { amount } = createWalletDto;
+        delete createWalletDto.amount;
+        const wallet = await tx.wallet.create({
+          data: { ...createWalletDto },
+        });
+        if (amount > 0) {
+          const category = await tx.category.findFirst({ where: { code: '1.1.3' } });
+          await tx.transaction.create({
+            data: {
+              name: createWalletDto.name,
+              amount: amount,
+              type: 'INCOME',
+              status: 'CONCLUDED',
+              wallet_id: wallet.id,
+              date: new Date(),
+              author_id: createWalletDto.author_id,
+              category_id: category.id,
+            },
+          });
+        }
+        return wallet;
       });
     } catch (error) {
       if (error.code === 'P2002') throw new BadRequestException('Wallet already exists');
@@ -73,6 +93,7 @@ export class WalletRepository {
             select: {
               amount: true,
               type: true,
+              status: true,
             },
           },
         },
@@ -80,13 +101,15 @@ export class WalletRepository {
       this.prisma.wallet.count({ where }),
     ]);
     return {
-      records: records.map((item) => {
+      records: records.map(({ transactions, ...item }) => {
         return {
           ...item,
-          amount: item.transactions.reduce((acc, cur) => {
-            if (cur.type === 'INCOME') return acc + cur.amount;
-            else return acc - cur.amount;
-          }, 0),
+          amount: transactions
+            .filter((item) => item.status === 'CONCLUDED')
+            .reduce((acc, cur) => {
+              if (cur.type === 'INCOME') return acc + cur.amount;
+              else return acc - cur.amount;
+            }, 0),
         };
       }),
       total,
@@ -95,21 +118,60 @@ export class WalletRepository {
   }
 
   async findById(id: string): Promise<WalletEntity> {
-    const [wallet, balance] = await Promise.all([
-      this.prisma.wallet.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          name: true,
-          type: true,
-          author: { select: { id: true, first_name: true, last_name: true } },
-          created_at: true,
-          updated_at: true,
+    const wallet = await this.prisma.wallet.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        author: { select: { id: true, first_name: true, last_name: true } },
+        created_at: true,
+        updated_at: true,
+        transactions: {
+          select: {
+            id: true,
+            name: true,
+            amount: true,
+            type: true,
+            status: true,
+            date: true,
+            category: { select: { id: true, name: true, code: true } },
+          },
         },
-      }),
-      this.transactionRepository.findWalletBalanceById(id),
-    ]);
-    return { ...wallet, amount: balance.income - balance.expense };
+      },
+    });
+    return {
+      ...wallet,
+      amount: wallet.transactions
+        .filter((item) => item.status === 'CONCLUDED')
+        .reduce((acc, cur) => {
+          if (cur.type === 'INCOME') return acc + cur.amount;
+          else return acc - cur.amount;
+        }, 0),
+    };
+    // const [wallet, balance] = await Promise.all([
+    //   this.prisma.wallet.findUnique({
+    //     where: { id },
+    //     select: {
+    //       id: true,
+    //       name: true,
+    //       type: true,
+    //       author: { select: { id: true, first_name: true, last_name: true } },
+    //       created_at: true,
+    //       updated_at: true,
+    //       transactions: {
+    //         select: {
+    //           id: true,
+    //           name: true,
+    //           type: true,
+    //           amount: true,
+    //         },
+    //       },
+    //     },
+    //   }),
+    //   this.transactionRepository.findWalletBalanceById(id),
+    // ]);
+    // return { ...wallet, amount: balance.income - balance.expense };
   }
 
   async update(id: string, updateWalletDto: UpdateWalletDto) {
