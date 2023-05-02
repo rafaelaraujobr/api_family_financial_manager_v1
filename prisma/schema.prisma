@@ -5,13 +5,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator erd {
-  provider                  = "prisma-erd-generator"
-  output                    = "../docs/erd.svg"
-  theme                     = "dark"
-  includeRelationFromFields = true
-  // erdDebug                  = true
-}
+// generator erd {
+//   provider                  = "prisma-erd-generator"
+//   output                    = "../docs/erd.svg"
+//   theme                     = "dark"
+//   includeRelationFromFields = true
+//   erdDebug                  = true
+// }
 
 datasource db {
   provider = "postgresql"
