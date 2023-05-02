@@ -52,14 +52,30 @@ export class WalletRepository {
     };
     const orderBy = { [query.order || 'updated_at']: query.sort || 'desc' };
     try {
-      return await this.prisma.wallet.findMany({
+      const wallets = await this.prisma.wallet.findMany({
         orderBy,
         where,
         select: {
           id: true,
           name: true,
+          transactions: {
+            select: {
+              amount: true,
+              type: true,
+              status: true,
+            },
+          },
         },
       });
+      return wallets.map(({ transactions, ...item }) => ({
+        ...item,
+        amount: transactions
+          .filter((item) => item.status === 'CONCLUDED')
+          .reduce((acc, cur) => {
+            if (cur.type === 'INCOME') return acc + cur.amount;
+            else return acc - cur.amount;
+          }, 0),
+      }));
     } catch (error) {
       throw new BadRequestException(error);
     }
