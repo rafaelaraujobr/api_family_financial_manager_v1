@@ -18,10 +18,17 @@ export class TransactionRepository {
     delete createTransactionDto.destination_wallet_id;
     try {
       return this.prisma.$transaction(async (tx) => {
+        const category_expense = await tx.category.findFirst({
+          where: { code: '2.7.1' },
+        });
+        const category_income = await tx.category.findFirst({
+          where: { code: '1.2.4' },
+        });
         const transaction_expense = await tx.transaction.create({
           data: {
             ...createTransactionDto,
             type: 'EXPENSE',
+            category_id: category_expense.id,
           },
         });
         const transaction_income = await tx.transaction.create({
@@ -29,8 +36,10 @@ export class TransactionRepository {
             ...createTransactionDto,
             type: 'INCOME',
             wallet_id: destination_wallet_id,
+            category_id: category_income.id,
           },
         });
+
         await tx.transferTransaction.create({
           data: {
             transaction_expense_id: transaction_expense.id,
@@ -111,6 +120,7 @@ export class TransactionRepository {
     });
   }
   async findAllPaginator(query: any) {
+    console.log(query);
     const page = +query.page || 1;
     const take = +query.limit || 10;
     const skip = (page - 1) * take;
@@ -119,11 +129,13 @@ export class TransactionRepository {
       realm_id: query.realm_id,
       wallet_id: query.wallet_id,
       name: query.name || undefined,
-      type: query.type || undefined,
       status: query.status || undefined,
       created_at: query.start_date && query.end_date ? { gte: query.start_date, lte: query.end_date } : undefined,
       AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],
     };
+    if (query.type === 'TRANSFER') {
+      where.NOT = [{ transaction_expense: null, transaction_income: null }];
+    } else where.type = query.type || undefined;
     const [transactions, total] = await this.prisma.$transaction([
       this.prisma.transaction.findMany({
         where,
@@ -151,16 +163,54 @@ export class TransactionRepository {
           },
           created_at: true,
           updated_at: true,
-          transaction_expense: true,
-          transaction_income: true,
+          transaction_expense: {
+            select: {
+              transaction_expense: {
+                select: {
+                  wallet: true,
+                },
+              },
+              transaction_income: {
+                select: {
+                  wallet: true,
+                },
+              },
+            },
+          },
+          transaction_income: {
+            select: {
+              transaction_expense: {
+                select: {
+                  wallet: true,
+                },
+              },
+              transaction_income: {
+                select: {
+                  wallet: true,
+                },
+              },
+            },
+          },
         },
       }),
       this.prisma.transaction.count({ where }),
     ]);
     return {
-      records: transactions.map(({ transaction_expense, transaction_income, ...rest }) => ({
-        ...rest,
+      records: transactions.map(({ transaction_income, transaction_expense, ...item }) => ({
+        ...item,
         is_transf: transaction_expense || transaction_income ? true : false,
+        origin_wallet:
+          transaction_expense || transaction_income
+            ? item.type === 'EXPENSE'
+              ? item.wallet
+              : transaction_income?.transaction_expense?.wallet
+            : null,
+        destination_wallet:
+          transaction_expense || transaction_income
+            ? item.type === 'INCOME'
+              ? item.wallet
+              : transaction_expense?.transaction_income?.wallet
+            : null,
       })),
       total,
       pages: Math.ceil(total / take),

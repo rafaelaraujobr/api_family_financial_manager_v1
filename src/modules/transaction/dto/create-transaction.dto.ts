@@ -49,6 +49,7 @@ export class CreateTransactionDto {
   @IsUUID()
   destination_wallet_id: string;
 
+  @ValidateIf((origin: any) => origin.type !== TypeTransaction.TRANSFER)
   @ApiProperty({ description: 'Id da categoria', type: String })
   @IsUUID()
   @IsNotEmpty()

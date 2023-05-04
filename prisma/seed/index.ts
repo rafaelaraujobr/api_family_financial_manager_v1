@@ -39,13 +39,6 @@ async function main() {
             realm_id: realm.id,
           },
         },
-        wallets: {
-          create: {
-            realm_id: realm.id,
-            name: 'default',
-            type: 'OTHER',
-          },
-        },
       },
     });
     return { realm, user };

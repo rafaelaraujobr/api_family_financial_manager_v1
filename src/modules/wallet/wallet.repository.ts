@@ -30,6 +30,7 @@ export class WalletRepository {
               date: new Date(),
               author_id: createWalletDto.author_id,
               category_id: category.id,
+              realm_id: createWalletDto.realm_id,
             },
           });
         }
@@ -58,6 +59,7 @@ export class WalletRepository {
         select: {
           id: true,
           name: true,
+          type: true,
           transactions: {
             select: {
               amount: true,
