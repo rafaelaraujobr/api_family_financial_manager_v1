@@ -149,6 +149,13 @@ export class TransactionRepository {
           status: true,
           amount: true,
           date: true,
+          author: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+            },
+          },
           category: {
             select: {
               id: true,
