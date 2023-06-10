@@ -18,7 +18,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Realm {
+model Tenant {
   id            String         @id @default(uuid())
   name          String
   created_at    DateTime       @default(now())
@@ -29,56 +29,149 @@ model Realm {
   transactions  Transaction[]
   notifications Notification[]
   preferences   Preference[]
-  users         UserRealm[]
+  users         UserOnTenant[]
+  groups        Group[]
 
-  @@map("realms")
+  @@map("tenants")
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
+  id            String             @id @default(uuid())
+  email         String             @unique
   password      String
-  cell_phone    String?
   first_name    String
   last_name     String
-  url_image     String?
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
+  created_at    DateTime           @default(now())
+  updated_at    DateTime           @updatedAt
   deleted_at    DateTime?
   wallets       Wallet[]
   targets       Target[]
   transactions  Transaction[]
   notifications Notification[]
   preference    Preference?
-  realm         UserRealm?
+  tenants       UserOnTenant[]
+  groups        UserOnGroup[]
+  permissions   UserOnPermission[]
 
   @@map("users")
 }
 
-model UserRealm {
-  user_id    String   @unique
+model UserOnTenant {
+  user_id    String
   user       User     @relation(fields: [user_id], references: [id])
-  realm_id   String
-  realm      Realm    @relation(fields: [realm_id], references: [id])
+  tenant_id  String
+  tenant     Tenant   @relation(fields: [tenant_id], references: [id])
   created_at DateTime @default(now())
+  role_id    String
+  role       Role     @relation(fields: [role_id], references: [id])
 
-  @@id([user_id, realm_id])
+  @@id([user_id, tenant_id])
   @@map("users_on_realms")
 }
 
+model Role {
+  id          String             @id @default(uuid())
+  name        String
+  slug        String             @unique
+  description String?
+  created_at  DateTime           @default(now())
+  updated_at  DateTime           @updatedAt
+  deleted_at  DateTime?
+  users       UserOnTenant[]
+  permissions RoleOnPermission[]
+
+  @@map("roles")
+}
+
+model Group {
+  id          String              @id @default(uuid())
+  name        String
+  description String?
+  tenant_id   String
+  tenant      Tenant              @relation(fields: [tenant_id], references: [id])
+  created_at  DateTime            @default(now())
+  updated_at  DateTime            @updatedAt
+  deleted_at  DateTime?
+  permissions GroupOnPermission[]
+  UserOnGroup UserOnGroup[]
+
+  @@map("groups")
+}
+
+model GroupOnPermission {
+  group_id      String
+  group         Group      @relation(fields: [group_id], references: [id])
+  permission_id String
+  permission    Permission @relation(fields: [permission_id], references: [id])
+  created_at    DateTime   @default(now())
+
+  @@id([group_id, permission_id])
+  @@map("groups_on_permissions")
+}
+
+model UserOnGroup {
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  group_id   String
+  group      Group    @relation(fields: [group_id], references: [id])
+  created_at DateTime @default(now())
+
+  @@id([user_id, group_id])
+  @@map("users_on_groups")
+}
+
+model UserOnPermission {
+  user_id       String
+  user          User       @relation(fields: [user_id], references: [id])
+  permission_id String
+  permission    Permission @relation(fields: [permission_id], references: [id])
+  created_at    DateTime   @default(now())
+
+  @@id([user_id, permission_id])
+  @@map("users_on_permissions")
+}
+
+model Permission {
+  id          String              @id @default(uuid())
+  name        String
+  description String?
+  action      String
+  entity      String
+  created_at  DateTime            @default(now())
+  updated_at  DateTime            @updatedAt
+  deleted_at  DateTime?
+  groups      GroupOnPermission[]
+  roles       RoleOnPermission[]
+  users       UserOnPermission[]
+
+  @@unique([action, entity])
+  @@map("permissions")
+}
+
+model RoleOnPermission {
+  role_id       String
+  role          Role       @relation(fields: [role_id], references: [id])
+  permission_id String
+  permission    Permission @relation(fields: [permission_id], references: [id])
+  created_at    DateTime   @default(now())
+
+  @@id([role_id, permission_id])
+  @@map("roles_on_permissions")
+}
+
 model Preference {
-  id         String              @id @default(uuid())
-  theme      ThemePreferences    @default(LIGHT)
-  language   LanguagePreferences @default(PT_BR)
-  currency   CurrencyPreferences @default(BRL)
-  wallet_id  String?
-  wallet     Wallet?             @relation(fields: [wallet_id], references: [id])
-  user_id    String              @unique
-  user       User                @relation(fields: [user_id], references: [id])
-  realm_id   String
-  realm      Realm               @relation(fields: [realm_id], references: [id])
-  created_at DateTime            @default(now())
-  updated_at DateTime            @updatedAt
+  id          String              @id @default(uuid())
+  user_id     String              @unique
+  user        User                @relation(fields: [user_id], references: [id])
+  theme       ThemePreferences    @default(LIGHT)
+  language    LanguagePreferences @default(PT_BR)
+  currency    CurrencyPreferences @default(BRL)
+  wallet_id   String?
+  main_wallet Wallet?             @relation(fields: [wallet_id], references: [id])
+  tenant_id   String
+  main_tenant Tenant              @relation(fields: [tenant_id], references: [id])
+  created_at  DateTime            @default(now())
+  updated_at  DateTime            @updatedAt
 
   @@map("preferences")
 }
@@ -103,8 +196,8 @@ model Wallet {
   name         String
   description  String?
   type         TypeWallet    @default(OTHER)
-  realm_id     String?
-  realm        Realm?        @relation(fields: [realm_id], references: [id])
+  tenant_id    String?
+  tenant       Tenant?       @relation(fields: [tenant_id], references: [id])
   author_id    String?
   is_notified  Boolean       @default(false)
   author       User?         @relation(fields: [author_id], references: [id])
@@ -115,7 +208,7 @@ model Wallet {
   transactions Transaction[]
   preferences  Preference[]
 
-  @@unique([name, realm_id])
+  @@unique([name, tenant_id])
   @@map("wallets")
 }
 
@@ -126,8 +219,8 @@ model Target {
   amount      Float     @default(0)
   wallet_id   String    @unique
   wallet      Wallet    @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
-  realm_id    String?
-  realm       Realm?    @relation(fields: [realm_id], references: [id])
+  tenant_id   String?
+  tenant      Tenant?   @relation(fields: [tenant_id], references: [id])
   author_id   String?
   author      User?     @relation(fields: [author_id], references: [id])
   created_at  DateTime  @default(now())
@@ -151,14 +244,13 @@ model Transaction {
   wallet              Wallet               @relation(fields: [wallet_id], references: [id])
   author_id           String?
   author              User?                @relation(fields: [author_id], references: [id])
-  realm_id            String?
-  realm               Realm?               @relation(fields: [realm_id], references: [id])
+  tenant_id           String?
+  tenant              Tenant?              @relation(fields: [tenant_id], references: [id])
   created_at          DateTime             @default(now())
   updated_at          DateTime             @updatedAt
   deleted_at          DateTime?
   transaction_expense TransferTransaction? @relation("transaction_expense")
   transaction_income  TransferTransaction? @relation("transaction_income")
-  obs                 String?
 
   @@map("transactions")
 }
@@ -182,8 +274,8 @@ model Notification {
   user_id     String
   payload     String?
   user        User               @relation(fields: [user_id], references: [id])
-  realm_id    String
-  realm       Realm              @relation(fields: [realm_id], references: [id])
+  tenant_id   String
+  tenant      Tenant             @relation(fields: [tenant_id], references: [id])
   created_at  DateTime           @default(now())
   updated_at  DateTime           @updatedAt
 

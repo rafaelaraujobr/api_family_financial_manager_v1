@@ -2,7 +2,7 @@ import { Controller, Get, Param, Delete } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Notifications')
+@ApiTags('Notificações')
 @Controller('api/v1/notifications')
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}

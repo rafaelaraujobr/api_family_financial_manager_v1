@@ -120,13 +120,12 @@ export class TransactionRepository {
     });
   }
   async findAllPaginator(query: any) {
-    console.log(query);
     const page = +query.page || 1;
     const take = +query.limit || 10;
     const skip = (page - 1) * take;
     const orderBy = { [query.order || 'updated_at']: query.sort || 'desc' };
     const where: any = {
-      realm_id: query.realm_id,
+      tenant_id: query.tenant_id,
       wallet_id: query.wallet_id,
       name: query.name || undefined,
       status: query.status || undefined,
@@ -246,7 +245,7 @@ export class TransactionRepository {
             type: true,
           },
         },
-        realm: {
+        tenant: {
           select: {
             id: true,
             name: true,

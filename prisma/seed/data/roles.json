@@ -1,0 +1,23 @@
+[
+  {
+    "id": "5ca9bccc-bcdb-41f3-9599-e65a0a082e83",
+    "name": "SuperUser",
+    "slug": "superuser",
+    "description": "SuperUser role"
+  },
+  {
+    "name": "Administrator",
+    "slug": "administrator",
+    "description": "Administrator role"
+  },
+  {
+    "name": "Manager",
+    "slug": "manager",
+    "description": "Manager role"
+  },
+  {
+    "name": "User",
+    "slug": "user",
+    "description": "User role"
+  }
+]

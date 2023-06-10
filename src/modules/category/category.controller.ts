@@ -5,7 +5,7 @@ import { QueryCategoryDto } from './dto/query-category.dto';
 import { CategoryEntity } from './entities/category.entity';
 // import { AuthGuard } from '../auth/auth.guard';
 
-@ApiTags('Categories')
+@ApiTags('Categorias')
 @Controller('api/v1/categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}

@@ -30,7 +30,7 @@ export class WalletRepository {
               date: new Date(),
               author_id: createWalletDto.author_id,
               category_id: category.id,
-              realm_id: createWalletDto.realm_id,
+              tenant_id: createWalletDto.tenant_id,
             },
           });
         }
@@ -44,7 +44,7 @@ export class WalletRepository {
 
   async findAll(query: QueryWalletDto): Promise<WalletEntity[]> {
     const where: any = {
-      realm_id: query.realm_id || undefined,
+      tenant_id: query.tenant_id || undefined,
       name: query.name || undefined,
       type: query.type || undefined,
       deleted_at: query.deleted ? { not: null } : null,
@@ -89,7 +89,7 @@ export class WalletRepository {
     const skip = (page - 1) * take;
     const orderBy = { [query.order || 'updated_at']: query.sort || 'desc' };
     const where: any = {
-      realm_id: query.realm_id || undefined,
+      tenant_id: query.tenant_id || undefined,
       deleted_at: query.deleted ? { not: null } : null,
       created_at: query.start_date && query.end_date ? { gte: query.start_date, lte: query.end_date } : undefined,
       AND: [{ name: { contains: query.search || '', mode: 'insensitive' } }],

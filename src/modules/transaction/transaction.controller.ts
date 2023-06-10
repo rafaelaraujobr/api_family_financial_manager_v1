@@ -6,9 +6,8 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs
 import { TransactionEntity } from './entities/transaction.entity';
 import { TransactionPaginationEntity } from './entities/transaction.pagination.entity';
 import { QueryTransactionDto } from './dto/query-transaction.dto';
-import { AuthGuard } from '../auth/auth.guard';
-
-@ApiTags('Transactions')
+import { AuthGuard } from '../auth/guards/auth.guard';
+@ApiTags('Transações')
 @Controller('api/v1/transactions')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
@@ -20,8 +19,8 @@ export class TransactionController {
   create(@Request() req, @Body() createTransactionDto: CreateTransactionDto) {
     return this.transactionService.create({
       ...createTransactionDto,
-      realm_id: req.user?.sub,
-      author_id: req.user?.user_id,
+      tenant_id: req.user?.main_tenant.id,
+      author_id: req.user?.id,
     });
   }
 
@@ -30,7 +29,7 @@ export class TransactionController {
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard)
   findAll(@Query() query: QueryTransactionDto, @Request() req) {
-    return this.transactionService.findAll({ ...query, realm_id: req.user?.sub });
+    return this.transactionService.findAll({ ...query, tenant_id: req.user?.main_tenant.id });
   }
 
   @ApiResponse({ status: 200, type: TransactionEntity, description: 'Sucesso' })

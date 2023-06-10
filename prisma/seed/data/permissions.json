@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Create user",
+    "description": "Create a new user",
+    "entity": "user",
+    "action": "create"
+  },
+  {
+    "name": "Update user",
+    "description": "Update an existing user",
+    "entity": "user",
+    "action": "update"
+  },
+  {
+    "name": "Delete user",
+    "description": "Delete an existing user",
+    "entity": "user",
+    "action": "delete"
+  },
+  {
+    "name": "Read user",
+    "description": "Read an existing user",
+    "entity": "user",
+    "action": "read"
+  },
+  {
+    "name": "Create role",
+    "description": "Create a new role",
+    "entity": "role",
+    "action": "create"
+  },
+  {
+    "name": "Update role",
+    "description": "Update an existing role",
+    "entity": "role",
+    "action": "update"
+  },
+  {
+    "name": "Delete role",
+    "description": "Delete an existing role",
+    "entity": "role",
+    "action": "delete"
+  },
+  {
+    "name": "Read role",
+    "description": "Read an existing role",
+    "entity": "role",
+    "action": "read"
+  },
+  {
+    "name": "Execute cron",
+    "description": "Execute cron",
+    "entity": "developer",
+    "action": "execute"
+  },
+  {
+    "name": "Permission customer",
+    "description": "Permission customer",
+    "entity": "customer",
+    "action": "read"
+  }
+]

@@ -9,20 +9,18 @@ export class UserRepository {
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user' + createUserDto;
   }
-
   async findAll() {
     const users = await this.prisma.user.findMany({
       select: {
         id: true,
         email: true,
-        cell_phone: true,
         first_name: true,
         last_name: true,
         created_at: true,
         updated_at: true,
-        realm: {
+        tenants: {
           select: {
-            realm: {
+            tenant: {
               select: {
                 id: true,
                 name: true,
@@ -32,26 +30,68 @@ export class UserRepository {
         },
       },
     });
-    return users.length ? users.map((user) => ({ ...user, realm: user.realm?.realm })) : [];
+    return users;
   }
-
   async findById(id: string) {
-    const user = await this.prisma.user.findUnique({
+    const { permissions, groups, tenants, ...user } = await this.prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
         email: true,
-        cell_phone: true,
         first_name: true,
         last_name: true,
         created_at: true,
         updated_at: true,
-        realm: {
+        groups: {
           select: {
-            realm: {
+            group: {
+              select: {
+                permissions: {
+                  select: {
+                    permission: {
+                      select: {
+                        action: true,
+                        entity: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        permissions: {
+          select: {
+            permission: {
+              select: {
+                action: true,
+                entity: true,
+              },
+            },
+          },
+        },
+        tenants: {
+          select: {
+            tenant: {
               select: {
                 id: true,
                 name: true,
+              },
+            },
+            role: {
+              select: {
+                id: true,
+                name: true,
+                permissions: {
+                  select: {
+                    permission: {
+                      select: {
+                        action: true,
+                        entity: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },
@@ -61,28 +101,95 @@ export class UserRepository {
             theme: true,
             currency: true,
             language: true,
-            wallet: true,
+            main_tenant: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            main_wallet: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
     });
-    return user ? { ...user, realm: user.realm?.realm } : null;
+    const userPermissions = [
+      ...permissions.map((item) => item.permission),
+      ...tenants.map((item) => item.role.permissions.map((item) => item.permission)),
+      ...groups.map((item) => item.group.permissions.map((item) => item.permission)),
+    ].flat();
+    const userTenants = [...tenants.map((item) => item.tenant)];
+    return { ...user, tenants: userTenants, permissions: userPermissions };
   }
-
   async findByEmail(email: string) {
     try {
-      const user = await this.prisma.user.findFirst({
+      const { permissions, groups, tenants, ...user } = await this.prisma.user.findFirst({
         where: { email },
         select: {
           id: true,
           email: true,
-          cell_phone: true,
-          first_name: true,
-          last_name: true,
           password: true,
-          realm: {
+          groups: {
             select: {
-              realm: {
+              group: {
+                select: {
+                  permissions: {
+                    select: {
+                      permission: {
+                        select: {
+                          action: true,
+                          entity: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          permissions: {
+            select: {
+              permission: {
+                select: {
+                  action: true,
+                  entity: true,
+                },
+              },
+            },
+          },
+          tenants: {
+            select: {
+              tenant: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  permissions: {
+                    select: {
+                      permission: {
+                        select: {
+                          action: true,
+                          entity: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          preference: {
+            select: {
+              main_tenant: {
                 select: {
                   id: true,
                   name: true,
@@ -92,16 +199,19 @@ export class UserRepository {
           },
         },
       });
-      return user ? { ...user, realm: user?.realm?.realm } : null;
+      const userPermissions = [
+        ...permissions.map((item) => item.permission),
+        ...tenants.map((item) => item.role.permissions.map((item) => item.permission)),
+        ...groups.map((item) => item.group.permissions.map((item) => item.permission)),
+      ].flat();
+      return { ...user, permissions: userPermissions };
     } catch (error) {
       throw new UnauthorizedException();
     }
   }
-
   update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user` + updateUserDto;
   }
-
   remove(id: string) {
     return `This action removes a #${id} user`;
   }

@@ -33,8 +33,8 @@ export class CreateWalletDto {
   @IsOptional()
   author_id: string;
 
-  @ApiPropertyOptional({ description: 'Id do realm', type: String })
+  @ApiPropertyOptional({ description: 'Id do Tenant', type: String })
   @IsString()
   @IsOptional()
-  realm_id: string;
+  tenant_id: string;
 }

@@ -7,25 +7,20 @@ export class AccountRepository {
   constructor(private readonly prisma: PrismaService) {}
   async create(createAccountDto: CreateAccountDto) {
     return this.prisma.$transaction(async (tx) => {
-      const realm = await tx.realm.create({ data: { name: 'default' } });
+      const tenant = await tx.tenant.create({ data: { name: 'default' } });
+      const role = await tx.role.findUnique({ where: { slug: 'user' } });
       const user = await tx.user.create({
         data: {
           ...createAccountDto,
           preference: {
             create: {
-              realm_id: realm.id,
+              tenant_id: tenant.id,
             },
           },
-          realm: {
+          tenants: {
             create: {
-              realm_id: realm.id,
-            },
-          },
-          wallets: {
-            create: {
-              realm_id: realm.id,
-              name: 'default',
-              type: 'OTHER',
+              tenant_id: tenant.id,
+              role_id: role.id,
             },
           },
         },

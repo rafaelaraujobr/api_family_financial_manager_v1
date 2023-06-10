@@ -1,16 +1,17 @@
 import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/auth.guard';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserEntity } from '../user/entities/user.entity';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
-@ApiTags('Account')
+@ApiTags('Contas')
 @Controller('api/v1/account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @ApiCreatedResponse({ description: 'Account created sucessfully' })
+  @ApiOperation({ summary: 'Criação da conta ' })
+  @ApiCreatedResponse({ description: 'Conta criada com sucesso' })
   @Post()
   create(@Body() createAccountDto: CreateAccountDto) {
     return this.accountService.create(createAccountDto);
@@ -21,6 +22,6 @@ export class AccountController {
   @UseGuards(AuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
-    return await this.accountService.getProfile(req.user?.user_id);
+    return await this.accountService.getProfile(req.user?.id);
   }
 }

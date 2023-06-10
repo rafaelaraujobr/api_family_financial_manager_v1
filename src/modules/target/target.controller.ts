@@ -6,7 +6,7 @@ import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TargetEntity } from './entities/target.entity';
 import { TargetPaginationEntity } from './entities/target.pagination.entity';
 
-@ApiTags('Targets')
+@ApiTags('Metas')
 @Controller('api/v1/targets')
 export class TargetController {
   constructor(private readonly targetService: TargetService) {}

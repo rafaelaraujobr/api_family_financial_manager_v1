@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StatusTransaction, TypeTransaction } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsString, IsNotEmpty, IsEnum, IsOptional, IsUUID, IsNumber, IsDate, ValidateIf } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsOptional, IsUUID, IsNumber, ValidateIf, IsDate } from 'class-validator';
 
 export class CreateTransactionDto {
   @ApiProperty({ description: 'Nome', type: String })
@@ -14,10 +14,10 @@ export class CreateTransactionDto {
   @IsOptional()
   description: string;
 
-  @ApiPropertyOptional({ description: 'Id do realm', type: String })
+  @ApiPropertyOptional({ description: 'Id do Tenant', type: String })
   @IsUUID()
   @IsOptional()
-  realm_id: string;
+  tenant_id: string;
 
   @ApiPropertyOptional({ description: 'Id do author', type: String })
   @IsUUID()

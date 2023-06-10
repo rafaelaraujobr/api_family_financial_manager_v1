@@ -19,10 +19,10 @@ export class QueryWalletDto {
   @IsOptional()
   name?: string;
 
-  @ApiPropertyOptional({ description: 'Id do realm', type: String })
+  @ApiPropertyOptional({ description: 'Id do tenant', type: String })
   @IsString()
   @IsOptional()
-  realm_id?: string;
+  tenant_id?: string;
 
   @ApiPropertyOptional({ description: 'Id do author', type: String })
   @IsString()
