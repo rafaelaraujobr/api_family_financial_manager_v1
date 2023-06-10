@@ -17,7 +17,9 @@ import { GroupModule } from './modules/group/group.module';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
-// import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard';
+import { APP_GUARD } from '@nestjs/core';
 import { SessionModule } from './modules/session/session.module';
 
 @Module({
@@ -28,10 +30,10 @@ import { SessionModule } from './modules/session/session.module';
       store: redisStore,
       url: process.env.REDIS_URL,
     }),
-    // ThrottlerModule.forRoot({
-    //   ttl: +process.env.THROTTLING_TIME_WINDOW,
-    //   limit: +process.env.THROTTLING_MAX_REQUESTS,
-    // }),
+    ThrottlerModule.forRoot({
+      ttl: +process.env.THROTTLING_TIME_WINDOW,
+      limit: +process.env.THROTTLING_MAX_REQUESTS,
+    }),
     AuthModule,
     AccountModule,
     TenantModule,
@@ -47,6 +49,13 @@ import { SessionModule } from './modules/session/session.module';
     SessionModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserService],
+  providers: [
+    AppService,
+    UserService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
