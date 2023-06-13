@@ -1,10 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 // generator erd {
 //   provider                  = "prisma-erd-generator"
 //   output                    = "../docs/erd.svg"
@@ -12,6 +8,9 @@ generator client {
 //   includeRelationFromFields = true
 //   erdDebug                  = true
 // }
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
