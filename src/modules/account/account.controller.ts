@@ -6,13 +6,13 @@ import { UserEntity } from '../user/entities/user.entity';
 import { AuthGuard } from '../auth/guards/auth.guard';
 
 @ApiTags('Contas')
-@Controller('api/v1/account')
+@Controller('api/v1')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
   @ApiOperation({ summary: 'Criação da conta ' })
   @ApiCreatedResponse({ description: 'Conta criada com sucesso' })
-  @Post()
+  @Post('register')
   create(@Body() createAccountDto: CreateAccountDto) {
     return this.accountService.create(createAccountDto);
   }
