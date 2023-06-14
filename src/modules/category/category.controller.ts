@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { QueryCategoryDto } from './dto/query-category.dto';
 import { CategoryEntity } from './entities/category.entity';
 // import { AuthGuard } from '../auth/auth.guard';
@@ -10,6 +10,7 @@ import { CategoryEntity } from './entities/category.entity';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
   @ApiResponse({ status: 200, description: 'Sucesso', isArray: true, type: CategoryEntity })
+  @ApiOperation({ summary: 'Listar categorias' })
   // @ApiBearerAuth('JWT')
   // @UseGuards(AuthGuard)
   @Get()

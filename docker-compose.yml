@@ -1,23 +1,23 @@
 version: '3.8'
 services:
-  app:
-    build:
-      context: .
-      target: development
-      dockerfile: ./Dockerfile
-    container_name: app_fintrix
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    env_file:
-      - docker.env
-    ports:
-      - '${PORT}:${PORT}'
-    networks:
-      - fintrix-network
-    depends_on:
-      - postgres
-      - cache
+  # app:
+  #   build:
+  #     context: .
+  #     target: development
+  #     dockerfile: ./Dockerfile
+  #   container_name: app_fintrix
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   env_file:
+  #     - docker.env
+  #   ports:
+  #     - '${PORT}:${PORT}'
+  #   networks:
+  #     - fintrix-network
+  #   depends_on:
+  #     - postgres
+  #     - cache
 
   postgres:
     image: postgres:14.1-alpine

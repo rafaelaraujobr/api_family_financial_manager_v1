@@ -3,6 +3,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { hash } from 'bcrypt';
 import { AccountRepository } from './account.repository';
 import { UserService } from '../user/user.service';
+import { UpdatePreferenceDto } from './dto/update-preference';
 
 @Injectable()
 export class AccountService {
@@ -20,5 +21,9 @@ export class AccountService {
   }
   async getProfile(id: string) {
     return await this.userService.findById(id);
+  }
+
+  updatePreference(user_id: string, updatePreferenceDto: UpdatePreferenceDto) {
+    return this.accountRepository.updatePreference(user_id, updatePreferenceDto);
   }
 }

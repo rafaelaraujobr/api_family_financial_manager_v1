@@ -31,11 +31,16 @@ export class TenantController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTenantDto: UpdateTenantDto) {
-    return this.tenantService.update(+id, updateTenantDto);
+    return this.tenantService.update(id, updateTenantDto);
+  }
+
+  @Patch(':id/update-default')
+  updateDefaultTenant(@Param('id') id: string) {
+    return this.tenantService.updateDefaultTenant(id);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.tenantService.remove(+id);
+    return this.tenantService.remove(id);
   }
 }
